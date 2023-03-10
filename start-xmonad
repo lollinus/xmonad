@@ -53,8 +53,6 @@ STALONETRAY_SLOT_SIZE=29
 # Activate primary screen 
 xrandr --output eDP-1 --auto --primary
 
-
-
 # If we find that a screen is connected via VGA, activate it and position it
 # to the left of the primary screen.
 # xrandr | grep 'VGA-1 connected' | ifne xrandr --output VGA-1 --auto --left-of eDP-1
@@ -62,11 +60,11 @@ xrandr --output eDP-1 --auto --primary
 # If we find that a screen is connected via Display Port, activate it and position it
 # to the left of the primary screen.
 if xrandr | grep 'DP-3 connected'; then
-    xrandr --output DP-3 --auto --primary --left-of eDP-1
+    xrandr --output DP-3 --auto --primary --right-of eDP-1
 fi
 
 if xrandr | grep 'DP-1 connected'; then
-    xrandr --output DP-1 --auto --left-of eDP-1 --auto --primary
+    xrandr --output DP-1 --auto --primary --left-of eDP-1
 fi
 
 # If we find a screen connected via Display Port, make it the primary screen
@@ -102,7 +100,16 @@ nitrogen --restore &
 #   -c ~/.xmonad/stalonetrayrc \
 #   --slot-size $STALONETRAY_SLOT_SIZE \
 # &
-trayer --SetDockType true --SetPartialStrut true --transparent true --tint 0x5f5f5f --align right --distancefrom top --edge top --width 10&
+trayer --SetDockType true \
+       --SetPartialStrut true \
+       --transparent true \
+       --tint 0x5f5f5f \
+       --align right \
+       --distancefrom top \
+       --edge top \
+       --width 10 \
+       --monitor primary \
+    &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
 # when using gnome applications which expect access to the keyring, such
@@ -124,8 +131,11 @@ forticlient &
 # Bluetooth manager
 blueman-applet &
 
+# Network Manager applet
+nm-applet &
+
 # RingCentral for direct communication
-ringcentral &
+# ringcentral &
 
 # Now, finally, start xmonad
 exec xmonad
