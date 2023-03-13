@@ -2,12 +2,14 @@ import XMonad
 
 import XMonad.Config.Gnome
 -- import XMonad.Config.Desktop
+import XMonad.Actions.CycleWS
 
 import XMonad.Util.EZConfig
 import XMonad.Util.Loggers
 import XMonad.Util.Ungrab
 
 import Data.Monoid (Endo)
+import qualified Data.Map as M
 
 -- import qualified XMonad.Layout.HintedTile as HintedTile
 import XMonad.Layout.Hidden
@@ -17,7 +19,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.PerWorkspace (onWorkspace)
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ThreeColumns
-import XMonad.Layout.Tabbed
+-- import XMonad.Layout.Tabbed
 
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
@@ -28,11 +30,13 @@ import XMonad.Hooks.StatusBar
 -- import XMonad.Hooks.StatusBar.PP
 import XMonad.Hooks.UrgencyHook
 
-import qualified XMonad.StackSet as W
+import qualified XMonad.StackSet as S
+import Control.Concurrent (threadDelay)
 
 main :: IO ()
-main = xmonad . ewmhFullscreen . ewmh . withEasySB (statusBarProp "xmobar ~/.config/xmobar/xmobarrc" (pure kbXmobarPP)) defToggleStrutsKey $ kbConfig
--- main = xmonad $ kbGnomeConfig
+main = xmonad . ewmhFullscreen . ewmh
+  . withEasySB (statusBarProp "xmobar ~/.config/xmobar/xmobarrc" (pure kbXmobarPP)) defToggleStrutsKey
+  $ kbGnomeConfig
 
 -- where
 --   toggleStrutsKey :: XConfig Layout -> (KeyMask, KeySym)
@@ -114,37 +118,12 @@ kbWorkspaces =
 
 startupWorkspace = "5:Dev"  -- which workspace do you want to be on after launch?
 
-kbGnomeConfig = gnomeConfig
-  { modMask    = mod4Mask -- Rebind Mod to the Super key
-  -- add manage hooks while still ignoring panels and using default manageHooks
-  , manageHook = kbManageHook <> manageHook gnomeConfig
+-- Mod4 is the Super / Windows key
+kbModMask = mod4Mask
+altMask = mod1Mask
 
-  -- add a fullscreen tabbed layout that does not avoid covering up
-  -- desktop panels before the desktop layouts
-  -- , layoutHook = simpleTabbed ||| layoutHook gnomeConfig
-  , layoutHook = desktopLayoutModifiers $ kbLayouts
-  , logHook = do
-      dynamicLogWithPP xmobarPP
-      -- updatePointer (Relative 0.9 0.9)
-      logHook gnomeConfig
-  }
-  `additionalKeysP`
-  [("M-C-s", unGrab *> spawn "scrot -s")
-  ]
-  `additionalKeys`
-  [((mod4Mask, xK_F8), spawn "scrot")
-  ]
-
-kbConfig = def
-  { modMask    = mod4Mask -- Rebind Mod to the Super key
-  , layoutHook = kbLayouts
-  -- , layoutHook = kbDefaultLayouts -- Use custom layouts
-  , manageHook = manageDocks <+> kbManageHook 
-  , startupHook = setWMName "LG3D"
-  , workspaces = kbWorkspaces
-  , terminal = "gnome-terminal"
-  }
-  `additionalKeysP`
+-- keybindings
+kbAdditionalKeysP = 
   [ ("M-S-z", spawn "xscreensaver-command -lock")
   , ("M-C-s", unGrab *> spawn "scrot -s")
   , ("M-p", spawn "synapse")
@@ -154,24 +133,141 @@ kbConfig = def
   -- , ("<Printscreen>", spawn "xfce4-screenshooter")
   , ("M-d", spawn "dmenu_run -b")
   ]
-  `additionalKeys`
+
+kbAdditionalKeys =
   [ ((0, xK_Print), spawn "xfce4-screenshooter")
-  , ((mod4Mask, xK_Escape), spawn "/home/karolbarski/bin/layout_switch.sh")
-  , ((mod4Mask .|. controlMask .|. shiftMask, xK_minus), sendMessage Mag.MagnifyMore)
-  , ((mod4Mask .|. controlMask              , xK_minus), sendMessage Mag.MagnifyLess)
-  , ((mod4Mask .|. controlMask              , xK_o    ), sendMessage Mag.ToggleOff  )
-  , ((mod4Mask .|. controlMask .|. shiftMask, xK_o    ), sendMessage Mag.ToggleOn   )
-  , ((mod4Mask .|. controlMask              , xK_m    ), sendMessage Mag.Toggle     )
+  , ((kbModMask                              , xK_Escape), spawn "/home/karolbarski/bin/layout_switch.sh")
+  , ((kbModMask .|. controlMask .|. shiftMask, xK_minus), sendMessage Mag.MagnifyMore)
+  , ((kbModMask .|. controlMask              , xK_minus), sendMessage Mag.MagnifyLess)
+  , ((kbModMask .|. controlMask              , xK_o    ), sendMessage Mag.ToggleOff  )
+  , ((kbModMask .|. controlMask .|. shiftMask, xK_o    ), sendMessage Mag.ToggleOn   )
+  , ((kbModMask .|. controlMask              , xK_m    ), sendMessage Mag.Toggle     )
   ]
+
+-- kbKeys conf = M.fromList $ --
+addlKeys conf@(XConfig {modMask = modm}) = M.fromList $
+  [ ((modm, xK_F1), gnomeMenu) ]
+
+gnomeMenu :: X ()
+gnomeMenu = withDisplay $ \dpy -> do
+    rw <- asks theRoot
+    gnome_panel <- getAtom "_GNOME_PANEL_ACTION"
+    panel_menu <- getAtom "_GNOME_PANEL_ACTION_MAIN_MENU"
+
+    -- a "magic" delay that just makes this work. The problem
+    -- is specified at
+    -- https://code.google.com/p/xmonad/issue/detail?id=451
+    -- Increase the delay if it doesn't work for you.
+    io $ threadDelay 2000000
+
+    io $ allocaXEvent $ \e -> do
+        setEventType e clientMessage
+        setClientMessageEvent e rw gnome_panel 32 panel_menu 0
+        sendEvent dpy rw False structureNotifyMask e
+        sync dpy False
+
+{--
+kbKeys conf = M.fromList $
+  [ ("M-<Return>", spawn $ XMonad.terminal conf)
+  , ("M-r", gnomeRun)
+  , ("M-c"     , kill)
+  , ("M-<Space>", sendMessage NextLayout)
+  , ("M-n", refresh)
+  , ("M-m"     , windows S.swapMaster)
+  , ("M1-<Tab>", windows S.focusDown)
+  , ("M1-S-<Tab>", windows S.focusUp)
+  , ("M-<Down>", windows S.swapDown)
+  , ("M-<Up>", windows S.swapUp)
+  , ("M-<Left>", sendMessage Shrink)
+  , ("M-<Right>", sendMessage Expand)
+  , ("M-t", withFocused $ windows . S.sink)
+  , ("M-w", sendMessage (IncMasterN 1))
+  , ("M-v", sendMessage (IncMasterN (-1)))
+  , ("M-q"     , broadcastMessage ReleaseResources >> restart "xmonad" True)
+  , ("M-S-q", spawn "gnome-session-save --kill")
+  , ("M-C-<Left>", prevWS)
+  , ("M-C-<Right>", nextWS)    
+  ] ++
+  -- [
+  --   ()
+  -- ] ++
+  kbAdditionalKeys ++
+  -- Alt+F1..F10 switches to workspace
+  -- (Alt is in a nicer location for the thumb than the Windows key,
+  -- and 1..9 keys are already in use by Firefox, irssi, ...)
+  [ ((altMask, k), windows $ S.greedyView i)
+      | (i, k) <- zip kbWorkspaces workspaceKeys
+  ] ++
+  -- mod+F1..F10 moves window to workspace and switches to that workspace
+  [ ((kbModMask, k), (windows $ S.shift i) >> (windows $ S.greedyView i))
+      | (i, k) <- zip kbWorkspaces workspaceKeys
+  ]
+  where workspaceKeys = [xK_F1 .. xK_F10]
+--}
+
+kbAddKeys conf = M.fromList $ kbAdditionalKeys
+kbAddKeysP conf = M.fromList $ kbAdditionalKeysP
+
+kbGnomeConfig = gnomeConfig
+  { modMask    = kbModMask -- Rebind Mod to the Super key
+  -- add manage hooks while still ignoring panels and using default manageHooks
+  , manageHook = manageDocks <+> kbManageHook <+> manageHook gnomeConfig
+
+  , startupHook = setWMName "LG3D"
+  -- add a fullscreen tabbed layout that does not avoid covering up
+  -- desktop panels before the desktop layouts
+  -- , layoutHook = simpleTabbed ||| layoutHook gnomeConfig
+  , layoutHook = desktopLayoutModifiers $ kbLayouts
+  , logHook = do
+      dynamicLogWithPP xmobarPP
+      -- updatePointer (Relative 0.9 0.9)
+      logHook gnomeConfig
+  , keys = addlKeys <+> kbAddKeys <+> keys gnomeConfig
+  , workspaces = kbWorkspaces
+  }
+  `additionalKeysP` kbAdditionalKeysP
+  -- `additionalKeys` kbAdditionalKeys
+
+kbConfig = def
+  { modMask    = kbModMask -- Rebind Mod to the Super key
+  , layoutHook = kbLayouts
+  -- , layoutHook = kbDefaultLayouts -- Use custom layouts
+  , manageHook = manageDocks <+> kbManageHook 
+  , startupHook = setWMName "LG3D"
+  , workspaces = kbWorkspaces
+  , terminal = "gnome-terminal"
+  , keys = addlKeys <+> kbAddKeys <+> keys gnomeConfig
+  }
+  `additionalKeysP` kbAdditionalKeysP
+  -- `additionalKeys` kbAdditionalKeys
+
+kbSafeConfig = def
+  { modMask    = kbModMask -- Rebind Mod to the Super key
+  , layoutHook = kbLayouts
+  -- , layoutHook = kbDefaultLayouts -- Use custom layouts
+  , manageHook = manageDocks <+> kbManageHook 
+  , startupHook = setWMName "LG3D"
+  , workspaces = kbWorkspaces
+  , terminal = "gnome-terminal"
+  , keys  = addlKeys <+> kbAddKeys <+> keys gnomeConfig
+  }
+  `additionalKeysP` kbAdditionalKeysP
+  -- `additionalKeys` kbAdditionalKeys
 
 kbManageHook :: XMonad.Query (Endo WindowSet)
 kbManageHook = composeAll . concat $
   [
     [isFullscreen --> doFullFloat] -- For Media Players
-  , [resource =? c --> doF (W.shift "media") | c <- kbClassMediaShifts]
+  , [resource =? c --> doF (S.shift "media") | c <- kbClassMediaShifts]
+  , [isIM --> moveToIM]
   ]
   where
-    -- viewShift = doF
+    isIM               = foldr1 (<||>) [isSignal, isRingCentral, isTeams]
+    moveToIM           = doF $ S.shift "7:Chat"
+    -- to acquire className use `xprop | grep 'CLASS'`
+    isSignal           = className =? "Signal"
+    isRingCentral      = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
+    isTeams            = className =? "Microsoft Teams - Preview"
     kbClassMediaShifts = ["mplayer", "vlc"]
 
 

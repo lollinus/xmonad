@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GNOME + XMonad
+Comment=This session logs you into GNOME + XMonad
+Exec=/usr/bin/gnome-session --systemd --session=gnome-flashback-xmonad --disable-acceleration-check
+TryExec=xmonad
+Type=Application
+DesktopNames=GNOME-Flashback;GNOME;
+X-Ubuntu-Gettext-Domain=gnome-flashback
