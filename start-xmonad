@@ -10,9 +10,11 @@
 # KLUDGES AND WORKAROUNDS
 #
 
+printenv | logger
+
 # Clear xmonad.state before starting xmonad -- otherwise this causes weird
 # issues, especially when going between single screen and multi-screen
-rm -f ~/.xmonad/xmonad.state
+rm -f ~/.config/xmonad/xmonad.state
 
 #
 # GENERAL INITIALIZATION
@@ -31,6 +33,8 @@ xrdb -merge .Xresources
 # transparency support.
 xcompmgr -n &
 
+pulseaudio &
+
 #
 # SCREEN CONFIGURATION
 #
@@ -40,7 +44,7 @@ xcompmgr -n &
 # screen we end up using, to avoid gaps between xmobar and stalonetray.
 # Note that right now we use the same size either way, the need for this
 # varies depending on your screen!
-STALONETRAY_SLOT_SIZE=29
+# STALONETRAY_SLOT_SIZE=10
 
 # We handle our screen configuration using xrandr. You are likely to want to 
 # edit this section to match the specific demands of your setup. The below
@@ -60,11 +64,13 @@ xrandr --output eDP-1 --auto --primary
 # If we find that a screen is connected via Display Port, activate it and position it
 # to the left of the primary screen.
 if xrandr | grep 'DP-3 connected'; then
-    xrandr --output DP-3 --auto --primary --right-of eDP-1
+    xrandr --output DP-3 --auto --right-of eDP-1
+    xrandr --output DP-3 --primary
 fi
 
 if xrandr | grep 'DP-1 connected'; then
-    xrandr --output DP-1 --auto --primary --left-of eDP-1
+    xrandr --output DP-1 --auto --left-of eDP-1
+    xrandr --output DP-1 --primary
 fi
 
 # If we find a screen connected via Display Port, make it the primary screen
@@ -80,8 +86,11 @@ fi
 # LOAD SCREEN BACKGROUNDS
 #
 
+# Set a nice background
+feh --bg-fill --no-fehbg ~/.wallpapers/haskell-red-noise.png
+
 # To set your backgrounds, run nitrogren /path/to/images
-nitrogen --restore &
+# nitrogen --restore &
 
 #
 # STARTUP ICON TRAY
@@ -97,19 +106,22 @@ nitrogen --restore &
 # The one option we set here is the slot size, which you can vary
 # depending on your screen setup with STALONETRAY_SLOT_SIZE as shown above
 # stalonetray \
-#   -c ~/.xmonad/stalonetrayrc \
+#   -c ~/.config/xmonad/stalonetrayrc \
 #   --slot-size $STALONETRAY_SLOT_SIZE \
+#  &
+# trayer --SetDockType true \
+#        --SetPartialStrut true \
+#        --transparent true \
+#        --tint 0x5f5f5f \
+#        --align right \
+#        --distancefrom top \
+#        --edge top \
+#        --width 10 \
+#        --height 18 \
+#        --monitor primary \
+#        --expand true \
 # &
-trayer --SetDockType true \
-       --SetPartialStrut true \
-       --transparent true \
-       --tint 0x5f5f5f \
-       --align right \
-       --distancefrom top \
-       --edge top \
-       --width 10 \
-       --monitor primary \
-    &
+polybar &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
 # when using gnome applications which expect access to the keyring, such
@@ -132,11 +144,18 @@ forticlient &
 blueman-applet &
 
 # Network Manager applet
-nm-applet &
+if [ -x /usr/bin/nm-applet ] ; then
+    nm-applet --sm-disable &
+fi
 
 # RingCentral for direct communication
 # ringcentral &
 
-# Now, finally, start xmonad
-exec xmonad
+# Fire up screensaver
+xscreensaver -no-splash &
 
+# Power Management
+
+# Now, finally, start xmonad
+#exec xmonad-x86_64-linux
+exec xmonad-x86_64-linux

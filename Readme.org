@@ -1,0 +1,225 @@
+
+
+#+options: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+options: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
+#+options: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
+#+options: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
+#+options: toc:t todo:t |:t
+#+title: Readme
+#+date: <2023-03-16 Thu>
+#+author: Karol Barski
+#+email: karol.barski@mobica.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 30.0.50 (Org mode 9.6.1)
+#+cite_export:
+* XMonad installation
+
+To install xmonad on Ubuntu 20.04 I use ghcup.
+
+#+name: get-ghcup
+#+begin_src bash :results raw pp :exports both
+  curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+#+end_src
+
+#+RESULTS: get-ghcup
+#+begin_example
+
+Welcome to Haskell!
+
+This script can download and install the following binaries:
+  ,* ghcup - The Haskell toolchain installer
+  ,* ghc   - The Glasgow Haskell Compiler
+  ,* cabal - The Cabal build tool for managing Haskell software
+  ,* stack - A cross-platform program for developing Haskell projects (similar to cabal)
+  ,* hls   - (optional) A language server for developers to integrate with their editor/IDE
+
+ghcup installs only into the following directory,
+which can be removed anytime:
+  /home/karolbarski/.ghcup
+
+[0;35mPress ENTER to proceed or ctrl-c to abort.[0m
+[0;35mNote that this script can be re-run at any given time.[0m
+-------------------------------------------------------------------------------
+[0;35m[0m
+[0;35mDetected bash shell on your system...[0m
+[0;35mDo you want ghcup to automatically add the required PATH variable to "/home/karolbarski/.bashrc"?[0m
+[0;35m[0m
+[0;35m[P] Yes, prepend  [A] Yes, append  [N] No  [?] Help (default is "P").[0m
+[0;35m[0m
+-------------------------------------------------------------------------------
+[0;35mDo you want to install haskell-language-server (HLS)?[0m
+[0;35mHLS is a language-server that provides IDE-like functionality[0m
+[0;35mand can integrate with different editors, such as Vim, Emacs, VS Code, Atom, ...[0m
+[0;35mAlso see https://haskell-language-server.readthedocs.io/en/stable/[0m
+[0;35m[0m
+[0;35m[Y] Yes  [N] No  [?] Help (default is "N").[0m
+[0;35m[0m
+-------------------------------------------------------------------------------
+[0;35mDo you want to enable better integration of stack with GHCup?[0m
+[0;35mThis means that stack won't install its own GHC versions, but uses GHCup's.[0m
+[0;35mFor more information see:[0m
+[0;35m  https://docs.haskellstack.org/en/stable/yaml_configuration/#ghc-installation-customisation-experimental[0m
+[0;35mIf you want to keep stacks vanilla behavior, answer 'No'.[0m
+[0;35m[0m
+[0;35m[Y] Yes  [N] No  [?] Help (default is "Y").[0m
+[0;35m[0m
+
+
+[0;35mPress ENTER to proceed or ctrl-c to abort.[0m
+[0;35mInstallation may take a while.[0m
+
+Config file path source is default config file.
+Config file /home/karolbarski/.cabal/config not found.
+Writing default configuration to /home/karolbarski/.cabal/config
+Downloading the latest package list from hackage.haskell.org
+Updated package list of hackage.haskell.org to the index-state 2023-03-16T09:32:28Z
+[0;35m/home/karolbarski/.stack/hooks/ghc-install.sh already exists, skipping hook installation.[0m
+[0;35mIf you want to reinstall the hook, delete it manually and re-run[0m
+[0;35mthis script![0m
+
+===============================================================================
+
+[0;35mOK! /home/karolbarski/.bashrc has been modified. Restart your terminal for the changes to take effect,[0m
+[0;35mor type "source /home/karolbarski/.ghcup/env" to apply them in your current terminal session.[0m
+
+===============================================================================
+[0;32m[0m
+[0;32mAll done![0m
+[0;32m[0m
+[0;32mTo start a simple repl, run:[0m
+[0;32m  ghci[0m
+[0;32m[0m
+[0;32mTo start a new haskell project in the current directory, run:[0m
+[0;32m  cabal init --interactive[0m
+[0;32m[0m
+[0;32mTo install other GHC versions and tools, run:[0m
+[0;32m  ghcup tui[0m
+[0;32m[0m
+[0;32mIf you are new to Haskell, check out https://www.haskell.org/ghcup/steps/[0m
+#+end_example
+
+TODO: Clone xmonad repository
+
+#+name: initialize xmonad repository
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+ cabal init --interactive -p kb-xmonad-config -e lollinus@gmail.com --libandexe --main-is=xmonad.hs -d xmonad -d xmonad-contrib -d dbus -d utf8-string -d monad-logger
+#+end_src
+
+Build xmonad
+
+#+name: build-xmonad
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+  cabal install xmonad
+#+end_src
+
+#+RESULTS: build-xmonad
+: Wrote tarball sdist to
+: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
+: Wrote tarball sdist to
+: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.17.1.9.tar.gz
+: Wrote tarball sdist to
+: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.17.1.9.tar.gz
+: Resolving dependencies...
+: Up to date
+: Symlinking 'xmonad' to '/home/karolbarski/.cabal/bin/xmonad'
+
+#+name: build-xmonad-config
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+  xmonad --recompile
+#+end_src
+
+#+RESULTS: build-xmonad-config
+: Wrote tarball sdist to
+: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
+: Wrote tarball sdist to
+: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.17.1.9.tar.gz
+: Wrote tarball sdist to
+: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.17.1.9.tar.gz
+: Resolving dependencies...
+: Up to date
+: Symlinking 'xmonad-kb' to '/home/karolbarski/.cache/xmonad/xmonad-kb'
+
+#+name: restart-xmonad
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+  xmonad --restart
+#+end_src
+
+#+RESULTS: restart-xmonad
+
+#+name: environment
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+  printenv
+#+end_src
+
+#+RESULTS: environment
+#+begin_example
+SHELL=/bin/bash
+QT_ACCESSIBILITY=1
+COLORTERM=truecolor
+XDG_CONFIG_DIRS=/etc/xdg/xdg-xmonad:/etc/xdg
+MANDATORY_PATH=/usr/share/gconf/xmonad.mandatory.path
+LC_ADDRESS=pl_PL.UTF-8
+LC_NAME=pl_PL.UTF-8
+SSH_AUTH_SOCK=/run/user/1001/gnupg/S.gpg-agent.ssh
+DESKTOP_SESSION=xmonad
+DEVTOOLS_HOME=/home/karolbarski/projects/DevTools/
+LC_MONETARY=pl_PL.UTF-8
+BFM_CACHEDIR=/home/karolbarski/bfm_cache
+GTK_MODULES=gail:atk-bridge
+XDG_SEAT=seat0
+PWD=/home/karolbarski/.config/xmonad
+XDG_SESSION_DESKTOP=xmonad
+LOGNAME=karolbarski
+XDG_SESSION_TYPE=x11
+GPG_AGENT_INFO=/run/user/1001/gnupg/S.gpg-agent:0:1
+_=/usr/bin/printenv
+XAUTHORITY=/run/user/1001/gdm/Xauthority
+WINDOWPATH=2
+GTK2_RC_FILES=/home/karolbarski/.gtkrc-2.0
+HOME=/home/karolbarski
+USERNAME=karolbarski
+LC_PAPER=pl_PL.UTF-8
+LANG=pl_PL.UTF-8
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+VTE_VERSION=6003
+GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/f106f92f_0712_4ea3_99a5_a6d7221e1c3a
+CMAKE_MODULE_PATH=/usr/lib/x86_64-linux-gnu/cmake
+LESSCLOSE=/usr/bin/lesspipe %s %s
+XDG_SESSION_CLASS=user
+LC_IDENTIFICATION=pl_PL.UTF-8
+TERM=dumb
+DEFAULTS_PATH=/usr/share/gconf/xmonad.default.path
+LESSOPEN=| /usr/bin/lesspipe %s
+USER=karolbarski
+GNOME_TERMINAL_SERVICE=:1.82
+DISPLAY=:0
+SHLVL=2
+LC_TELEPHONE=pl_PL.UTF-8
+LC_MEASUREMENT=pl_PL.UTF-8
+XDG_VTNR=2
+XDG_SESSION_ID=25
+XDG_RUNTIME_DIR=/run/user/1001
+LC_TIME=pl_PL.UTF-8
+XDG_DATA_DIRS=/usr/share/xmonad:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+PATH=/home/karolbarski/.ghcup/bin:/home/karolbarski/.cargo/bin:/home/karolbarski/.cabal/bin:/home/karolbarski/.local/bin:/home/karolbarski/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/emacs/current/usr/bin
+GDMSESSION=xmonad
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus
+LC_NUMERIC=pl_PL.UTF-8
+#+end_example
+* Additional software
+** Alacritty
+Terminal emulator.
+
+Add PPA repository
+#+name: add alacritty ppa repository
+#+begin_src bash :dir /sudo::/ :exports both :results raw pp
+  add-apt-repository ppa:aslatter/ppa
+#+end_src
+
+Install Alacritty
+#+name: install alacritty
+#+begin_src bash :dir /sudo::/ :exports both :results raw pp
+  sudo apt install alacritty
+#+end_src

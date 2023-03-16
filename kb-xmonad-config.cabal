@@ -1,0 +1,20 @@
+------------------------------------------------------------------------------
+name:          kb-xmonad-config
+version:       0.13
+synopsis:      My XMonad configuration Repository
+license:       BSD2
+license-file:  LICENSE
+author:        Karol Barski <lollinus@gmail.com>
+maintainer:    Karol Barski <lollinus@gmail.com>
+copyright:     Copyright (c) 2023 Karol Barski
+category:      Graphics
+build-type:    Simple
+cabal-version: >=1.8
+------------------------------------------------------------------------------
+executable xmonad-x86_64-linux
+  main-is: config.hs
+  ghc-options: -Wall -fno-warn-missing-signatures -W-unused-top-binds
+  -- -Werror
+  build-depends: base, xmonad, xmonad-contrib, dbus
+               , utf8-string, monad-logger, directory
+               , X11, containers, ghc
