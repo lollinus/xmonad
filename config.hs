@@ -117,8 +117,6 @@ main' dbus = do
     , logHook            = kbPolybarLogHook dbus
     , startupHook        = myStartupHook
     }
-    `additionalKeysP` kbAdditionalKeysP
-    `additionalKeys` kbAdditionalKeys
   where
     dynProjects = dynamicProjects projects
     keybindings = addDescrKeys' ((kbModMask, xK_F1), showKeybindings) myKeys
@@ -415,8 +413,10 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Logout (quit XMonad)"   (modm .|. shiftMask, xK_q ) $ io exitSuccess
     , key "Restart XMonad"         (modm              , xK_q ) $ spawn "xmonad --recompile; xmonad --restart"
     , key "Capture entire screen"  (modm          , xK_Print ) $ spawn "flameshot full -p ~/Pictures/flameshot/"
-    , key "Switch keyboard layout" (modm             , xK_F8 ) $ spawn "kls"
-    , key "Disable CapsLock"       (modm             , xK_F9 ) $ spawn "setxkbmap -option ctrl:nocaps"
+    , key "Screenshot"             (0             , xK_Print ) $ spawn "xfce4-screenshooter"
+    -- , key "Switch keyboard layout" (modm          , xK_F8    ) $ spawn "kls"
+    , key "Disable CapsLock"       (modm          , xK_F9    ) $ spawn "setxkbmap -option ctrl:nocaps"
+    , key "Switch keyboard Layout" (modm          , xK_Escape) $ spawn "/home/karolbarski/bin/layout_switch.sh"
     ] ^++^
   keySet "Windows"
     [ key "Close focused"   (modm              , xK_BackSpace) kill
@@ -436,6 +436,18 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Increase size"   (modm              , xK_s        ) $ withFocused (keysResizeWindow (10,10) (1,1))
     , key "Decr  abs size"  (modm .|. shiftMask, xK_d        ) $ withFocused (keysAbsResizeWindow (-10,-10) (1024,752))
     , key "Incr  abs size"  (modm .|. shiftMask, xK_s        ) $ withFocused (keysAbsResizeWindow (10,10) (1024,752))
+    , key "Focus urgent"    (modm              , xK_u        ) focusUrgent
+    ] ^++^
+  keySet "Magnification"
+    [ key "Magnify More"   (modm .|. controlMask .|. shiftMask , xK_minus) $ sendMessage Mag.MagnifyMore 
+    , key "Magnify Less"   (modm .|. controlMask               , xK_minus) $ sendMessage Mag.MagnifyLess 
+    , key "Magnify Off"    (modm .|. controlMask               , xK_o    ) $ sendMessage Mag.ToggleOff   
+    , key "Magnify On"     (modm .|. controlMask .|. shiftMask , xK_o    ) $ sendMessage Mag.ToggleOn    
+    , key "Magnify Toggle" (modm .|. controlMask               , xK_m    ) $ sendMessage Mag.Toggle       
+    ] ^++^
+  keySet "Window Hiding"
+    [ key "Hide window" (modm, xK_backslash)      $ withFocused hideWindow
+    , key "UnHide oldest" ( modm .|. shiftMask, xK_backslash) $ popOldestHiddenWindow
     ] ^++^
   keySet "Workspaces"
     [ key "Next"          (modm              , xK_period    ) nextWS'
@@ -538,35 +550,6 @@ projects =
 
 -- Mod4 is the Super / Windows key
 kbModMask = mod4Mask
-altMask   = mod1Mask
-
--- keybindings
-kbAdditionalKeysP =
-  [ ("M-S-z"     , spawn "xscreensaver-command -lock")
-  , ("M-C-s"     , unGrab *> spawn "scrot -s")
-  , ("M-p"       , spawn appLauncher)
-  -- , ("M-S-c"     , spawn calcLauncher)
-  , ("M-S-m"     , spawn emojiPicker)
-  , ("M-C-l"     , spawn screenLocker)
-  , ("M-\\"      , withFocused hideWindow)
-  , ("M-S-\\"    , popOldestHiddenWindow)
-  , ("M-u"       , focusUrgent)
-  -- , ("<Printscreen>", spawn "xfce4-screenshooter")
-  , ("M-d", spawn "dmenu_run -b")
-  -- , ("M1-g", gnomeRun)
-  , ("M-b", spawn "polybar-msg cmd toggle" <> sendMessage ToggleStruts)
-  ]
-
-kbAdditionalKeys =
-  [ ((0, xK_Print), spawn "xfce4-screenshooter")
-  , ((kbModMask                              , xK_Escape), spawn "/home/karolbarski/bin/layout_switch.sh")
-  , ((kbModMask .|. controlMask .|. shiftMask, xK_minus), sendMessage Mag.MagnifyMore)
-  , ((kbModMask .|. controlMask              , xK_minus), sendMessage Mag.MagnifyLess)
-  , ((kbModMask .|. controlMask              , xK_o    ), sendMessage Mag.ToggleOff  )
-  , ((kbModMask .|. controlMask .|. shiftMask, xK_o    ), sendMessage Mag.ToggleOn   )
-  , ((kbModMask .|. controlMask              , xK_m    ), sendMessage Mag.Toggle     )
-  , ((kbModMask .|. shiftMask, xK_q     ), io exitSuccess) -- %! Quit xmonad
-  ]
 
 {--
 addlKeys conf@(XConfig {modMask = modm}) = M.fromList

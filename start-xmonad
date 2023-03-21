@@ -33,7 +33,12 @@ xrdb -merge .Xresources
 # transparency support.
 xcompmgr -n &
 
-pulseaudio &
+# pulseaudio &
+# Pulse Audio systray
+pasystray &
+
+# Clipboard manager systray 
+xfce4-clipman &
 
 #
 # SCREEN CONFIGURATION
@@ -64,13 +69,15 @@ xrandr --output eDP-1 --auto --primary
 # If we find that a screen is connected via Display Port, activate it and position it
 # to the left of the primary screen.
 if xrandr | grep 'DP-3 connected'; then
-    xrandr --output DP-3 --auto --right-of eDP-1
+    xrandr --output DP-3 --auto --left-of eDP-1
     xrandr --output DP-3 --primary
+    MONITOR=DP-3
 fi
 
 if xrandr | grep 'DP-1 connected'; then
     xrandr --output DP-1 --auto --left-of eDP-1
     xrandr --output DP-1 --primary
+    MONITOR=DP-1
 fi
 
 # If we find a screen connected via Display Port, make it the primary screen
@@ -121,7 +128,7 @@ feh --bg-fill --no-fehbg ~/.wallpapers/haskell-red-noise.png
 #        --monitor primary \
 #        --expand true \
 # &
-polybar &
+polybar main &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
 # when using gnome applications which expect access to the keyring, such
@@ -131,6 +138,7 @@ gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
 
 # Remap caps lock to left control. This is not strictly speaking
 # xmonad related, but it's handy if you're a vim user.
+~/bin/switch_layout.sh
 setxkbmap -option 'ctrl:nocaps'
 
 # Change the default X cursor away from the "X"
