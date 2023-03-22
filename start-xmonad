@@ -10,8 +10,6 @@
 # KLUDGES AND WORKAROUNDS
 #
 
-printenv | logger
-
 # Clear xmonad.state before starting xmonad -- otherwise this causes weird
 # issues, especially when going between single screen and multi-screen
 rm -f ~/.config/xmonad/xmonad.state
@@ -44,13 +42,6 @@ xfce4-clipman &
 # SCREEN CONFIGURATION
 #
 
-# Default icon slot size for tray icons...
-# We can adjust this parameter if necessary depending on the
-# screen we end up using, to avoid gaps between xmobar and stalonetray.
-# Note that right now we use the same size either way, the need for this
-# varies depending on your screen!
-# STALONETRAY_SLOT_SIZE=10
-
 # We handle our screen configuration using xrandr. You are likely to want to 
 # edit this section to match the specific demands of your setup. The below
 # setup is for a Lenovo W520 laptop that sometimes has an external monitor
@@ -59,75 +50,51 @@ xfce4-clipman &
 # Note that you can run xrandr at the command line to get a list of your
 # connected screens and find out what names you should use to refer to them.
 
-# Activate primary screen 
-xrandr --output eDP-1 --auto --primary
-
 # If we find that a screen is connected via VGA, activate it and position it
 # to the left of the primary screen.
 # xrandr | grep 'VGA-1 connected' | ifne xrandr --output VGA-1 --auto --left-of eDP-1
 
 # If we find that a screen is connected via Display Port, activate it and position it
 # to the left of the primary screen.
+
+# Office desktop setup
 if xrandr | grep 'DP-3 connected'; then
-    xrandr --output DP-3 --auto --left-of eDP-1
-    xrandr --output DP-3 --primary
+    xrandr --output --output DP-3 --primary --mode 2560x1440 --pos 0x0 --rotate normal --output eDP-1 --mode 1920x1080 --pos 2560x360 --rotate normal 
     MONITOR=DP-3
 fi
 
+# Home desktop setup
 if xrandr | grep 'DP-1 connected'; then
-    xrandr --output DP-1 --auto --left-of eDP-1
-    xrandr --output DP-1 --primary
+    xrandr --output DP-1 --primary --mode 3440x1440 --pos 0x0 --rotate normal --output eDP-1 --mode 1920x1080 --pos 3440x360 --rotate normal
     MONITOR=DP-1
 fi
 
-# If we find a screen connected via Display Port, make it the primary screen
-# and deactivate the built-in screen... also adjust size of icons
-#DP_1_CONNECTED=`xrandr | grep 'DP-1 connected'`
-#if [ -n "$DP_1_CONNECTED" ]; then
-#  xrandr --output LVDS-1-1 --off
-#  xrandr --output DP-1 --auto --primary
-#  STALONETRAY_SLOT_SIZE=29
-#fi
+# When no external monitor connected then activate builtin as primary
+if [ -z "$MONITOR" ]; then
+    # Activate primary screen 
+    xrandr --output eDP-1 --auto --primary
+fi
 
-#
 # LOAD SCREEN BACKGROUNDS
 #
 
 # Set a nice background
 feh --bg-fill --no-fehbg ~/.wallpapers/haskell-red-noise.png
 
-# To set your backgrounds, run nitrogren /path/to/images
-# nitrogen --restore &
-
 #
 # STARTUP ICON TRAY
 #
 
-# We are using stalonetray to create a small icon tray at the
+# We are using polybar to create a small icon tray at the
 # top right of the screen. You are likely to want to tweak the
 # size of the icons and the width of the tray based upon the
 # size of your screen and your xmobar configuration. The goal is
-# to make stalonetray look like it is part of xmobar.
+# to make polybar look like it is part of xmobar.
 # 
 # Edit configuration in ~/.xmonad/stalonetrayrc if needed.
 # The one option we set here is the slot size, which you can vary
 # depending on your screen setup with STALONETRAY_SLOT_SIZE as shown above
 # stalonetray \
-#   -c ~/.config/xmonad/stalonetrayrc \
-#   --slot-size $STALONETRAY_SLOT_SIZE \
-#  &
-# trayer --SetDockType true \
-#        --SetPartialStrut true \
-#        --transparent true \
-#        --tint 0x5f5f5f \
-#        --align right \
-#        --distancefrom top \
-#        --edge top \
-#        --width 10 \
-#        --height 18 \
-#        --monitor primary \
-#        --expand true \
-# &
 polybar main &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
