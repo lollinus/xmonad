@@ -95,6 +95,7 @@ import Control.Monad      ( replicateM_
                           , unless)
 import qualified XMonad.Layout.LayoutModifier as XMonad.Layout
 import GHC.Data.FastString.Env (mkDFsEnv)
+import XMonad.Actions.GridSelect (bringSelected)
 
 main :: IO ()
 main = mkDbusClient >>= main'
@@ -289,14 +290,15 @@ data App
   deriving Show
 
 audacious   = ClassApp "Audacious"                             "audacious"
-btm         = TitleApp "btm"                                   "alacritty -t btm -e btm --color gruvbox --default_widget_type proc"
+bottom      = TitleApp "bottom"                                "alacritty -t bottom -e bottom --color gruvbox --default_widget_type proc"
 vlc         = ClassApp "vlc"                                   "vlc"
 scr         = ClassApp "SimpleScreenRecorder"                  "simplescreenrecorder"
 spotify     = ClassApp "Spotify"                               "spotify"
 itunes      = ClassApp "apple-music-for-linux"                 "apple-music-for-linux"
 ringCentral = NameApp  "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge"
-teams       = ClassApp "Microsoft Teams - Preview"             "teams"
-nautilus    = ClassApp "Org.gnome.Nautilus"                    "nautilus"
+teams       = NameApp  "crx__cifhbcnohmdccbgoicgdjpfamggdegmo" "microsoft-edge"
+signal      = ClassApp "Signal"                                "signal-desktop"
+nautilus    = ClassApp "org.gnome.Nautilus"                    "nautilus"
 forticlient = ClassApp "FortiClient"                           "forticlient"
 
 kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
@@ -306,6 +308,10 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
    isPopup             = isRole =? "pop-up"
    isSplash            = isInProperty "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_SPLASH"
    isRole              = stringProperty "WM_WINDOW_ROLE"
+   isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams]
+   isSignal            = className =? "Signal"
+   isRingCentral       = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
+   isTeams             = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
    tileBelow           = insertPosition Below Newer
    doCalendarFloat     = customFloating (W.RationalRect (11 / 15) (1 / 48) (1 / 4) (1 / 8))
    manageScratchpads   = namedScratchpadManageHook scratchpads
@@ -313,6 +319,7 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
    anyOf = foldl (<||>) (pure False)
    match :: [App] -> Query Bool
    match = anyOf . fmap isInstance
+   moveToIM = doF $ W.shift comWs
    manageApps = composeOne
      [
      -- isInstance calendar             -?> doCalendarFloat
@@ -326,8 +333,10 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
              , isSplash
              ]                         -?> doCenterFloat
      , isFullscreen                    -?> doFullFloat
+     , isIM                            -?> moveToIM
      , pure True                       -?> tileBelow
      ]
+
 
 isInstance (ClassApp c _) = className =? c
 isInstance (TitleApp t _) = title =? t
@@ -345,7 +354,7 @@ scratchpadApp app = NS (getAppName app) (getAppCommand app) (isInstance app) def
 
 runScratchpadApp = namedScratchpadAction scratchpads . getAppName
 
-scratchpads = scratchpadApp <$> [ btm, scr, spotify, itunes ]
+scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral, signal, teams, forticlient ]
 
 --------------------------------------------------------------------------------
 
@@ -362,7 +371,7 @@ showKeybindings :: [((KeyMask, KeySym), NamedAction)] -> NamedAction
 showKeybindings xs =
   let
     filename = "/home/karolbarski/.config/xmonad/keybindings"
-    command f = "alacitty -e dialog --title 'XMonad Key Bindings' --colors --hline \"$(date)\" --textbox " ++ f ++ " 50 100"
+    command f = "alacritty -e dialog --title 'XMonad Key Bindings' --colors --hline \"$(date)\" --textbox " ++ f ++ " 50 100"
   in addName "Show Keybindings" $ do
     b <- liftIO $ doesFileExist filename
     unless b $ liftIO (writeFile filename (unlines $ showKm xs))
@@ -401,11 +410,13 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     ] ^++^
   keySet "Scratchpads"
     [ key "Audacious"       (modm .|. controlMask,  xK_a    ) $ runScratchpadApp audacious
-    , key "bottom"          (modm .|. controlMask,  xK_y    ) $ runScratchpadApp btm
+    , key "bottom"          (modm .|. controlMask,  xK_y    ) $ runScratchpadApp bottom
     , key "Files"           (modm .|. controlMask,  xK_f    ) $ runScratchpadApp nautilus
     , key "Screen recorder" (modm .|. controlMask,  xK_r    ) $ runScratchpadApp scr
-    , key "Spotify"         (modm .|. controlMask,  xK_s    ) $ runScratchpadApp spotify
     , key "FortiClient"     (modm .|. controlMask,  xK_v    ) $ runScratchpadApp forticlient
+    , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams
+    , key "RingCentral"     (modm .|. controlMask,  xK_p    ) $ runScratchpadApp ringCentral
+    , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signal
     ] ^++^
   keySet "Screens" switchScreen ^++^
   keySet "System"
@@ -446,8 +457,8 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Magnify Toggle" (modm .|. controlMask               , xK_m    ) $ sendMessage Mag.Toggle       
     ] ^++^
   keySet "Window Hiding"
-    [ key "Hide window" (modm, xK_backslash)      $ withFocused hideWindow
-    , key "UnHide oldest" ( modm .|. shiftMask, xK_backslash) $ popOldestHiddenWindow
+    [ key "Hide window"    (modm              , xK_backslash) $ withFocused hideWindow
+    , key "UnHide oldest"  (modm .|. shiftMask, xK_backslash) $ popOldestHiddenWindow
     ] ^++^
   keySet "Workspaces"
     [ key "Next"          (modm              , xK_period    ) nextWS'
@@ -587,7 +598,7 @@ kbManageHook1 = composeAll . concat $
     -- to acquire className use `xprop | grep 'CLASS'`
     isSignal           = className =? "Signal"
     isRingCentral      = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
-    isTeams            = className =? "Microsoft Teams - Preview"
+    isTeams            = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
     kbClassMediaShifts = ["mplayer", "vlc"]
 
 

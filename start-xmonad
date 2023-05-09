@@ -10,6 +10,10 @@
 # KLUDGES AND WORKAROUNDS
 #
 
+# add user path to environment
+# This is requred so XMonad recompile will work with cabal isntalled in home directory
+. ~/.profile
+
 # Clear xmonad.state before starting xmonad -- otherwise this causes weird
 # issues, especially when going between single screen and multi-screen
 rm -f ~/.config/xmonad/xmonad.state
@@ -58,15 +62,15 @@ xfce4-clipman &
 # to the left of the primary screen.
 
 # Office desktop setup
-if xrandr | grep 'DP-3 connected'; then
-    xrandr --output --output DP-3 --primary --mode 2560x1440 --pos 0x0 --rotate normal --output eDP-1 --mode 1920x1080 --pos 2560x360 --rotate normal 
-    MONITOR=DP-3
+if xrandr | grep '^DP-1-3 connected'; then
+    xrandr --output DP-1-3 --primary --mode 2560x1440 --pos 0x0 --rotate normal --output eDP-1-1 --mode 1920x1080 --pos 2560x360 --rotate normal
+    MONITOR=DP-1-3
 fi
 
 # Home desktop setup
-if xrandr | grep 'DP-1 connected'; then
-    xrandr --output DP-1 --primary --mode 3440x1440 --pos 0x0 --rotate normal --output eDP-1 --mode 1920x1080 --pos 3440x360 --rotate normal
-    MONITOR=DP-1
+if xrandr | grep '^DP-1-1 connected'; then
+    xrandr --output DP-1-1 --primary --mode 3440x1440 --pos 0x0 --rotate normal --output eDP-1-1 --mode 1920x1080 --pos 3440x360 --rotate normal
+    MONITOR=DP-1-1
 fi
 
 # When no external monitor connected then activate builtin as primary
@@ -95,7 +99,7 @@ feh --bg-fill --no-fehbg ~/.wallpapers/haskell-red-noise.png
 # The one option we set here is the slot size, which you can vary
 # depending on your screen setup with STALONETRAY_SLOT_SIZE as shown above
 # stalonetray \
-polybar main &
+MONITOR=${MONITOR} polybar --config=~/.config/polybar/config.ini main &
 
 # Run the gnome-keyring-daemon to avoid issues you otherwise may encounter
 # when using gnome applications which expect access to the keyring, such
