@@ -33,7 +33,8 @@ xrdb -merge .Xresources
 # if you prefer not to use any transparency, but it is likely to cause
 # ugly black fringing with some programs such as synapse that expect
 # transparency support.
-xcompmgr -n &
+# xcompmgr -n &
+picom --dbus --backend glx -f -D 5 --opacity-rule "100:name *= 'i3lock'" -c -o 0.75 &
 
 # pulseaudio &
 # Pulse Audio systray
@@ -124,7 +125,7 @@ blueman-applet &
 
 # Network Manager applet
 if [ -x /usr/bin/nm-applet ] ; then
-    nm-applet --sm-disable &
+    nm-applet --sm-disable --indicator &
 fi
 
 # RingCentral for direct communication

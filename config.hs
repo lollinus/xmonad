@@ -428,6 +428,9 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     -- , key "Switch keyboard layout" (modm          , xK_F8    ) $ spawn "kls"
     , key "Disable CapsLock"       (modm          , xK_F9    ) $ spawn "setxkbmap -option ctrl:nocaps"
     , key "Switch keyboard Layout" (modm          , xK_Escape) $ spawn "/home/karolbarski/bin/layout_switch.sh"
+    -- Screen brightness
+    , key "Inc screen brightness"  (0, xF86XK_KbdBrightnessUp  ) $ spawn "light -A 10"
+    , key "Dec screen brightness"  (0, xF86XK_KbdBrightnessDown) $ spawn "light -U 10"
     ] ^++^
   keySet "Windows"
     [ key "Close focused"   (modm              , xK_BackSpace) kill
@@ -445,8 +448,8 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Rotate slaves"   (modm .|. shiftMask, xK_Tab      ) rotSlavesUp
     , key "Decrease size"   (modm              , xK_d        ) $ withFocused (keysResizeWindow (-10,-10) (1,1))
     , key "Increase size"   (modm              , xK_s        ) $ withFocused (keysResizeWindow (10,10) (1,1))
-    , key "Decr  abs size"  (modm .|. shiftMask, xK_d        ) $ withFocused (keysAbsResizeWindow (-10,-10) (1024,752))
-    , key "Incr  abs size"  (modm .|. shiftMask, xK_s        ) $ withFocused (keysAbsResizeWindow (10,10) (1024,752))
+    , key "Decr abs size"   (modm .|. shiftMask, xK_d        ) $ withFocused (keysAbsResizeWindow (-10,-10) (1024,752))
+    , key "Incr abs size"   (modm .|. shiftMask, xK_s        ) $ withFocused (keysAbsResizeWindow (10,10) (1024,752))
     , key "Focus urgent"    (modm              , xK_u        ) focusUrgent
     ] ^++^
   keySet "Magnification"
