@@ -1,5 +1,3 @@
-
-
 #+options: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
 #+options: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
 #+options: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
@@ -16,7 +14,13 @@
 #+cite_export:
 * XMonad installation
 
-To install xmonad on Ubuntu 20.04 I use ghcup.
+To install xmonad on Ubuntu 22.04 I use ghcup.
+
+For building install ~ghc 9.4.7~. newer ghc version will fail to build
+due to dbus requiring ~bytestring<0.12~ and newer ghc ships
+~bytestring 0.12~.
+
+✔✔ ghc 9.4.7 recommended,base-4.17.2.0 hls-powered
 
 #+name: get-ghcup
 #+begin_src bash :results raw pp :exports both
@@ -104,7 +108,7 @@ TODO: Clone xmonad repository
 
 #+name: initialize xmonad repository
 #+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
- cabal init --interactive -p kb-xmonad-config -e lollinus@gmail.com --libandexe --main-is=xmonad.hs -d xmonad -d xmonad-contrib -d dbus -d utf8-string -d monad-logger
+ cabal init --interactive -p kb-xmonad-config -e lollinus@gmail.com --libandexe --main-is=xmonad.hs -d xmonad -d xmonad-contrib -d dbus -d monad-logger -d utf8-string
 #+end_src
 
 Build xmonad

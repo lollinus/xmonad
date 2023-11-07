@@ -34,7 +34,7 @@ xrdb -merge .Xresources
 # ugly black fringing with some programs such as synapse that expect
 # transparency support.
 # xcompmgr -n &
-picom --dbus --backend glx -f -D 5 --opacity-rule "100:name *= 'i3lock'" -c -o 0.75 &
+# picom --dbus --backend glx -f -D 5 --opacity-rule "100:name *= 'i3lock'" -c -o 0.75 &
 
 # pulseaudio &
 # Pulse Audio systray
