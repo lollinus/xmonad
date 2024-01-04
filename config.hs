@@ -1,9 +1,10 @@
+{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, PatternGuards, NoMonomorphismRestriction, OverloadedStrings, DeriveDataTypeable #-}
+
 import XMonad
 
 import System.Exit
 import System.Directory             ( doesFileExist )
 import Graphics.X11.ExtraTypes.XF86
-
 import XMonad.Util.EZConfig
 import XMonad.Util.Loggers
 import XMonad.Util.Ungrab
@@ -34,6 +35,7 @@ import qualified Data.Map as M
 import           XMonad.Layout.Gaps                   ( gaps )
 import           XMonad.Layout.Grid                   ( Grid(..) )
 import           XMonad.Layout.Hidden
+import           XMonad.Layout.IM                 
 import qualified XMonad.Layout.Magnifier as Mag
 import           XMonad.Layout.MultiColumns
 import           XMonad.Layout.MultiToggle           ( Toggle(..)
@@ -45,11 +47,15 @@ import           XMonad.Layout.Spacing               ( spacing )
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.PerWorkspace          (onWorkspace)
 import           XMonad.Layout.ResizableTile
+import           XMonad.Layout.Tabbed
 import           XMonad.Layout.ThreeColumns
 import           XMonad.Prompt                       ( XPConfig(..)
                                                      , amberXPConfig
                                                      , XPPosition(CenteredAt)
                                                      )
+import           XMonad.Prompt.FuzzyMatch
+import           XMonad.Prompt.Shell
+import           XMonad.Prompt.Window
 
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
@@ -300,6 +306,7 @@ teams       = NameApp  "crx__cifhbcnohmdccbgoicgdjpfamggdegmo" "microsoft-edge"
 signal      = ClassApp "Signal"                                "signal-desktop"
 nautilus    = ClassApp "org.gnome.Nautilus"                    "nautilus"
 forticlient = ClassApp "FortiClient"                           "forticlient"
+ghci        = TitleApp "ghci"                                  "alacritty -t ghci -e ghci"
 
 kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
  where
@@ -354,7 +361,7 @@ scratchpadApp app = NS (getAppName app) (getAppCommand app) (isInstance app) def
 
 runScratchpadApp = namedScratchpadAction scratchpads . getAppName
 
-scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral, signal, teams, forticlient ]
+scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral, signal, teams, forticlient, ghci ]
 
 --------------------------------------------------------------------------------
 
@@ -417,6 +424,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams
     , key "RingCentral"     (modm .|. controlMask,  xK_p    ) $ runScratchpadApp ringCentral
     , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signal
+    , key "Ghci"            (modm .|. controlMask,  xK_g    ) $ runScratchpadApp ghci
     ] ^++^
   keySet "Screens" switchScreen ^++^
   keySet "System"
