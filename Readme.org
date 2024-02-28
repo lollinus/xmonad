@@ -115,19 +115,22 @@ Build xmonad
 
 #+name: build-xmonad
 #+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
-  cabal install xmonad
+  cabal install --overwrite-policy=always xmonad
 #+end_src
 
 #+RESULTS: build-xmonad
-: Wrote tarball sdist to
-: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
-: Wrote tarball sdist to
-: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.17.1.9.tar.gz
-: Wrote tarball sdist to
-: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.17.1.9.tar.gz
-: Resolving dependencies...
-: Up to date
-: Symlinking 'xmonad' to '/home/karolbarski/.cabal/bin/xmonad'
+#+begin_example
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.18.0.9.tar.gz
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.18.0.9.tar.gz
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-extras-0.17.1.tar.gz
+Resolving dependencies...
+Symlinking 'xmonad' to '/home/karolbarski/.local/bin/xmonad'
+#+end_example
 
 #+name: build-xmonad-config
 #+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
@@ -135,15 +138,496 @@ Build xmonad
 #+end_src
 
 #+RESULTS: build-xmonad-config
-: Wrote tarball sdist to
-: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
-: Wrote tarball sdist to
-: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.17.1.9.tar.gz
-: Wrote tarball sdist to
-: /home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.17.1.9.tar.gz
-: Resolving dependencies...
-: Up to date
-: Symlinking 'xmonad-kb' to '/home/karolbarski/.cache/xmonad/xmonad-kb'
+#+begin_example
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.18.0.9.tar.gz
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.18.0.9.tar.gz
+Wrote tarball sdist to
+/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-extras-0.17.1.tar.gz
+Resolving dependencies...
+Build profile: -w ghc-9.4.8 -O2
+In order, the following will be built (use -v for more details):
+ - OneTuple-0.4.1.1 (lib) (requires build)
+ - StateVar-1.2.2 (lib) (requires build)
+ - attoparsec-0.14.4 (lib:attoparsec-internal) (requires build)
+ - auto-update-0.1.6 (lib) (requires build)
+ - base-orphans-0.9.1 (lib) (requires build)
+ - blaze-builder-0.4.2.3 (lib) (requires build)
+ - cabal-doctest-1.0.9 (lib) (requires build)
+ - call-stack-0.4.0 (lib) (requires build)
+ - cereal-0.5.8.3 (lib) (requires build)
+ - easy-file-0.2.5 (lib) (requires build)
+ - hashable-1.4.3.0 (lib) (requires build)
+ - integer-logarithms-1.0.3.1 (lib) (requires build)
+ - monad-loops-0.4.3 (lib) (requires build)
+ - network-3.1.4.0 (lib:network) (requires build)
+ - old-locale-1.0.0.7 (lib) (requires build)
+ - parallel-3.2.2.0 (lib) (requires build)
+ - primitive-0.9.0.0 (lib) (requires build)
+ - reflection-2.1.7 (lib) (requires build)
+ - semigroups-0.20 (lib) (requires build)
+ - split-0.2.5 (lib) (requires download & build)
+ - splitmix-0.1.0.5 (lib) (requires build)
+ - stm-chans-3.0.0.9 (lib) (requires build)
+ - tagged-0.8.8 (lib) (requires build)
+ - th-abstraction-0.6.0.0 (lib) (requires build)
+ - transformers-compat-0.7.2 (lib) (requires build)
+ - unix-compat-0.7.1 (lib) (requires build)
+ - unliftio-core-0.2.1.0 (lib) (requires build)
+ - utf8-string-1.0.2 (lib) (requires build)
+ - vector-stream-0.1.0.1 (lib) (requires download & build)
+ - void-0.7.3 (lib) (requires build)
+ - xml-types-0.3.8 (lib) (requires build)
+ - zlib-0.7.0.0 (lib) (requires download & build)
+ - contravariant-1.5.5 (lib) (requires build)
+ - blaze-markup-0.8.3.0 (lib) (requires build)
+ - unordered-containers-0.2.20 (lib) (requires download & build)
+ - async-2.2.5 (lib) (requires build)
+ - old-time-1.1.0.4 (lib:old-time) (requires build)
+ - scientific-0.3.7.0 (lib) (requires build)
+ - random-1.2.1.2 (lib) (requires download & build)
+ - foldable1-classes-compat-0.1 (lib) (requires build)
+ - distributive-0.6.2.1 (lib) (requires build)
+ - assoc-1.1 (lib) (requires build)
+ - th-lift-0.8.4 (lib) (requires build)
+ - transformers-base-0.4.6 (lib) (requires build)
+ - resourcet-1.3.0 (lib) (requires build)
+ - X11-xft-0.3.4 (lib) (requires build)
+ - vector-0.13.1.0 (lib) (requires build)
+ - blaze-html-0.9.1.2 (lib) (requires build)
+ - typed-process-0.2.11.1 (lib) (requires build)
+ - unix-time-0.4.12 (lib:unix-time) (requires download & build)
+ - attoparsec-0.14.4 (lib) (requires build)
+ - streaming-commons-0.2.2.6 (lib) (requires build)
+ - indexed-traversable-0.1.3 (lib) (requires build)
+ - these-1.2 (lib) (requires build)
+ - monad-control-1.0.3.1 (lib) (requires build)
+ - xmonad-contrib-0.18.0.9 (lib) (requires build)
+ - bitvec-1.1.5.0 (lib) (requires build)
+ - fast-logger-3.2.2 (lib) (requires build)
+ - indexed-traversable-instances-0.1.1.2 (lib) (requires build)
+ - comonad-5.0.8 (lib) (requires build)
+ - strict-0.5 (lib) (requires build)
+ - lifted-base-0.2.3.12 (lib) (requires build)
+ - vector-algorithms-0.9.0.1 (lib) (requires build)
+ - bifunctors-5.6.1 (lib) (requires build)
+ - mono-traversable-1.0.15.3 (lib) (requires build)
+ - semigroupoids-6.0.0.1 (lib) (requires build)
+ - profunctors-5.6.2 (lib) (requires build)
+ - conduit-1.3.5 (lib) (requires build)
+ - invariant-0.6.2 (lib) (requires build)
+ - free-5.2 (lib) (requires build)
+ - conduit-extra-1.3.6 (lib) (requires build)
+ - adjunctions-4.4.2 (lib) (requires build)
+ - xml-conduit-1.9.1.3 (lib:xml-conduit) (requires build)
+ - monad-logger-0.3.40 (lib) (requires build)
+ - kan-extensions-5.2.5 (lib) (requires build)
+ - lens-5.2.3 (lib) (requires build)
+ - dbus-1.3.2 (lib) (requires download & build)
+ - kb-xmonad-config-0.13 (exe:xmonad-x86_64-linux) (requires build)
+Downloading  split-0.2.5
+Starting     StateVar-1.2.2 (lib)
+Starting     OneTuple-0.4.1.1 (lib)
+Starting     base-orphans-0.9.1 (lib)
+Starting     cabal-doctest-1.0.9 (lib)
+Starting     call-stack-0.4.0 (lib)
+Starting     cereal-0.5.8.3 (lib)
+Starting     easy-file-0.2.5 (lib)
+Starting     integer-logarithms-1.0.3.1 (lib)
+Starting     auto-update-0.1.6 (lib)
+Starting     attoparsec-0.14.4 (lib:attoparsec-internal)
+Starting     blaze-builder-0.4.2.3 (lib)
+Starting     hashable-1.4.3.0 (lib)
+Building     StateVar-1.2.2 (lib)
+Building     OneTuple-0.4.1.1 (lib)
+Building     base-orphans-0.9.1 (lib)
+Building     call-stack-0.4.0 (lib)
+Building     cabal-doctest-1.0.9 (lib)
+Building     cereal-0.5.8.3 (lib)
+Building     integer-logarithms-1.0.3.1 (lib)
+Building     easy-file-0.2.5 (lib)
+Downloaded   split-0.2.5
+Downloading  vector-stream-0.1.0.1
+Building     auto-update-0.1.6 (lib)
+Building     attoparsec-0.14.4 (lib:attoparsec-internal)
+Building     hashable-1.4.3.0 (lib)
+Building     blaze-builder-0.4.2.3 (lib)
+Installing   OneTuple-0.4.1.1 (lib)
+Downloaded   vector-stream-0.1.0.1
+Downloading  random-1.2.1.2
+Completed    OneTuple-0.4.1.1 (lib)
+Starting     monad-loops-0.4.3 (lib)
+Installing   StateVar-1.2.2 (lib)
+Installing   call-stack-0.4.0 (lib)
+Installing   base-orphans-0.9.1 (lib)
+Downloaded   random-1.2.1.2
+Downloading  unix-time-0.4.12
+Completed    call-stack-0.4.0 (lib)
+Starting     network-3.1.4.0 (all, legacy fallback)
+Downloaded   unix-time-0.4.12
+Downloading  zlib-0.7.0.0
+Completed    StateVar-1.2.2 (lib)
+Starting     old-locale-1.0.0.7 (lib)
+Installing   auto-update-0.1.6 (lib)
+Completed    base-orphans-0.9.1 (lib)
+Starting     parallel-3.2.2.0 (lib)
+Building     monad-loops-0.4.3 (lib)
+Installing   easy-file-0.2.5 (lib)
+Completed    auto-update-0.1.6 (lib)
+Starting     primitive-0.9.0.0 (lib)
+Downloaded   zlib-0.7.0.0
+Downloading  unordered-containers-0.2.20
+Completed    easy-file-0.2.5 (lib)
+Starting     reflection-2.1.7 (lib)
+Installing   integer-logarithms-1.0.3.1 (lib)
+Installing   cabal-doctest-1.0.9 (lib)
+Building     old-locale-1.0.0.7 (lib)
+Downloaded   unordered-containers-0.2.20
+Downloading  dbus-1.3.2
+Building     parallel-3.2.2.0 (lib)
+Completed    integer-logarithms-1.0.3.1 (lib)
+Starting     semigroups-0.20 (lib)
+Installing   attoparsec-0.14.4 (lib:attoparsec-internal)
+Completed    cabal-doctest-1.0.9 (lib)
+Starting     split-0.2.5 (lib)
+Building     primitive-0.9.0.0 (lib)
+Completed    attoparsec-0.14.4 (lib:attoparsec-internal)
+Starting     splitmix-0.1.0.5 (lib)
+Building     reflection-2.1.7 (lib)
+Installing   old-locale-1.0.0.7 (lib)
+Downloaded   dbus-1.3.2
+Installing   monad-loops-0.4.3 (lib)
+Building     semigroups-0.20 (lib)
+Building     split-0.2.5 (lib)
+Completed    old-locale-1.0.0.7 (lib)
+Starting     stm-chans-3.0.0.9 (lib)
+Completed    monad-loops-0.4.3 (lib)
+Starting     tagged-0.8.8 (lib)
+Building     splitmix-0.1.0.5 (lib)
+Installing   semigroups-0.20 (lib)
+Installing   parallel-3.2.2.0 (lib)
+Building     stm-chans-3.0.0.9 (lib)
+Completed    semigroups-0.20 (lib)
+Starting     th-abstraction-0.6.0.0 (lib)
+Building     tagged-0.8.8 (lib)
+Completed    parallel-3.2.2.0 (lib)
+Installing   split-0.2.5 (lib)
+Starting     transformers-compat-0.7.2 (lib)
+Installing   blaze-builder-0.4.2.3 (lib)
+Installing   hashable-1.4.3.0 (lib)
+Completed    split-0.2.5 (lib)
+Starting     unix-compat-0.7.1 (lib)
+Completed    blaze-builder-0.4.2.3 (lib)
+Building     th-abstraction-0.6.0.0 (lib)
+Starting     unliftio-core-0.2.1.0 (lib)
+Completed    hashable-1.4.3.0 (lib)
+Starting     utf8-string-1.0.2 (lib)
+Building     transformers-compat-0.7.2 (lib)
+Installing   splitmix-0.1.0.5 (lib)
+Building     unix-compat-0.7.1 (lib)
+Completed    splitmix-0.1.0.5 (lib)
+Starting     vector-stream-0.1.0.1 (lib)
+Building     unliftio-core-0.2.1.0 (lib)
+Installing   stm-chans-3.0.0.9 (lib)
+Building     utf8-string-1.0.2 (lib)
+Completed    stm-chans-3.0.0.9 (lib)
+Starting     void-0.7.3 (lib)
+Building     vector-stream-0.1.0.1 (lib)
+Installing   unliftio-core-0.2.1.0 (lib)
+Installing   tagged-0.8.8 (lib)
+Building     network-3.1.4.0 (all, legacy fallback)
+Completed    unliftio-core-0.2.1.0 (lib)
+Starting     xml-types-0.3.8 (lib)
+Building     void-0.7.3 (lib)
+Installing   unix-compat-0.7.1 (lib)
+Completed    tagged-0.8.8 (lib)
+Starting     zlib-0.7.0.0 (lib)
+Completed    unix-compat-0.7.1 (lib)
+Starting     contravariant-1.5.5 (lib)
+Installing   reflection-2.1.7 (lib)
+Installing   void-0.7.3 (lib)
+Completed    reflection-2.1.7 (lib)
+Starting     old-time-1.1.0.4 (all, legacy fallback)
+Building     xml-types-0.3.8 (lib)
+Completed    void-0.7.3 (lib)
+Starting     blaze-markup-0.8.3.0 (lib)
+Building     zlib-0.7.0.0 (lib)
+Building     contravariant-1.5.5 (lib)
+Building     blaze-markup-0.8.3.0 (lib)
+Installing   transformers-compat-0.7.2 (lib)
+Completed    transformers-compat-0.7.2 (lib)
+Starting     unordered-containers-0.2.20 (lib)
+Installing   contravariant-1.5.5 (lib)
+Completed    contravariant-1.5.5 (lib)
+Starting     async-2.2.5 (lib)
+Building     unordered-containers-0.2.20 (lib)
+Building     old-time-1.1.0.4 (all, legacy fallback)
+Building     async-2.2.5 (lib)
+Installing   utf8-string-1.0.2 (lib)
+Installing   vector-stream-0.1.0.1 (lib)
+Completed    utf8-string-1.0.2 (lib)
+Starting     random-1.2.1.2 (lib)
+Completed    vector-stream-0.1.0.1 (lib)
+Starting     foldable1-classes-compat-0.1 (lib)
+Installing   th-abstraction-0.6.0.0 (lib)
+Completed    th-abstraction-0.6.0.0 (lib)
+Starting     distributive-0.6.2.1 (lib)
+Building     random-1.2.1.2 (lib)
+Building     foldable1-classes-compat-0.1 (lib)
+Installing   xml-types-0.3.8 (lib)
+Completed    xml-types-0.3.8 (lib)
+Starting     assoc-1.1 (lib)
+Building     distributive-0.6.2.1 (lib)
+Installing   async-2.2.5 (lib)
+Installing   cereal-0.5.8.3 (lib)
+Installing   primitive-0.9.0.0 (lib)
+Building     assoc-1.1 (lib)
+Completed    async-2.2.5 (lib)
+Starting     transformers-base-0.4.6 (lib)
+Installing   zlib-0.7.0.0 (lib)
+Completed    cereal-0.5.8.3 (lib)
+Starting     X11-xft-0.3.4 (lib)
+Completed    primitive-0.9.0.0 (lib)
+Starting     th-lift-0.8.4 (lib)
+Completed    zlib-0.7.0.0 (lib)
+Starting     typed-process-0.2.11.1 (lib)
+Installing   assoc-1.1 (lib)
+Installing   distributive-0.6.2.1 (lib)
+Installing   old-time-1.1.0.4 (all, legacy fallback)
+Building     X11-xft-0.3.4 (lib)
+Building     transformers-base-0.4.6 (lib)
+Completed    assoc-1.1 (lib)
+Starting     vector-0.13.1.0 (lib)
+Completed    distributive-0.6.2.1 (lib)
+Starting     scientific-0.3.7.0 (lib)
+Building     th-lift-0.8.4 (lib)
+Completed    old-time-1.1.0.4 (all, legacy fallback)
+Building     typed-process-0.2.11.1 (lib)
+Starting     resourcet-1.3.0 (lib)
+Installing   foldable1-classes-compat-0.1 (lib)
+Building     vector-0.13.1.0 (lib)
+Completed    foldable1-classes-compat-0.1 (lib)
+Starting     unix-time-0.4.12 (all, legacy fallback)
+Installing   transformers-base-0.4.6 (lib)
+Building     scientific-0.3.7.0 (lib)
+Building     resourcet-1.3.0 (lib)
+Completed    transformers-base-0.4.6 (lib)
+Starting     these-1.2 (lib)
+Installing   X11-xft-0.3.4 (lib)
+Building     these-1.2 (lib)
+Installing   th-lift-0.8.4 (lib)
+Completed    X11-xft-0.3.4 (lib)
+Starting     indexed-traversable-0.1.3 (lib)
+Completed    th-lift-0.8.4 (lib)
+Starting     monad-control-1.0.3.1 (lib)
+Installing   network-3.1.4.0 (all, legacy fallback)
+Installing   typed-process-0.2.11.1 (lib)
+Completed    network-3.1.4.0 (all, legacy fallback)
+Building     indexed-traversable-0.1.3 (lib)
+Completed    typed-process-0.2.11.1 (lib)
+Building     monad-control-1.0.3.1 (lib)
+Installing   resourcet-1.3.0 (lib)
+Installing   blaze-markup-0.8.3.0 (lib)
+Completed    resourcet-1.3.0 (lib)
+Completed    blaze-markup-0.8.3.0 (lib)
+Starting     blaze-html-0.9.1.2 (lib)
+Building     unix-time-0.4.12 (all, legacy fallback)
+Installing   monad-control-1.0.3.1 (lib)
+Building     blaze-html-0.9.1.2 (lib)
+Completed    monad-control-1.0.3.1 (lib)
+Starting     lifted-base-0.2.3.12 (lib)
+Building     lifted-base-0.2.3.12 (lib)
+Installing   these-1.2 (lib)
+Completed    these-1.2 (lib)
+Starting     strict-0.5 (lib)
+Installing   unix-time-0.4.12 (all, legacy fallback)
+Building     strict-0.5 (lib)
+Completed    unix-time-0.4.12 (all, legacy fallback)
+Starting     fast-logger-3.2.2 (lib)
+Installing   lifted-base-0.2.3.12 (lib)
+Installing   scientific-0.3.7.0 (lib)
+Building     fast-logger-3.2.2 (lib)
+Completed    lifted-base-0.2.3.12 (lib)
+Completed    scientific-0.3.7.0 (lib)
+Starting     attoparsec-0.14.4 (lib)
+Installing   indexed-traversable-0.1.3 (lib)
+Completed    indexed-traversable-0.1.3 (lib)
+Starting     comonad-5.0.8 (lib)
+Building     attoparsec-0.14.4 (lib)
+Building     comonad-5.0.8 (lib)
+Installing   fast-logger-3.2.2 (lib)
+Completed    fast-logger-3.2.2 (lib)
+Installing   comonad-5.0.8 (lib)
+Installing   strict-0.5 (lib)
+Completed    comonad-5.0.8 (lib)
+Starting     bifunctors-5.6.1 (lib)
+Completed    strict-0.5 (lib)
+Building     bifunctors-5.6.1 (lib)
+Installing   random-1.2.1.2 (lib)
+Completed    random-1.2.1.2 (lib)
+Starting     streaming-commons-0.2.2.6 (lib)
+Starting     xmonad-contrib-0.18.0.9 (lib)
+Building     streaming-commons-0.2.2.6 (lib)
+Building     xmonad-contrib-0.18.0.9 (lib)
+Installing   unordered-containers-0.2.20 (lib)
+Completed    unordered-containers-0.2.20 (lib)
+Installing   streaming-commons-0.2.2.6 (lib)
+Completed    streaming-commons-0.2.2.6 (lib)
+Installing   blaze-html-0.9.1.2 (lib)
+Completed    blaze-html-0.9.1.2 (lib)
+Installing   bifunctors-5.6.1 (lib)
+Completed    bifunctors-5.6.1 (lib)
+Starting     profunctors-5.6.2 (lib)
+Starting     semigroupoids-6.0.0.1 (lib)
+Building     profunctors-5.6.2 (lib)
+Building     semigroupoids-6.0.0.1 (lib)
+Installing   profunctors-5.6.2 (lib)
+Completed    profunctors-5.6.2 (lib)
+Starting     invariant-0.6.2 (lib)
+Building     invariant-0.6.2 (lib)
+Installing   semigroupoids-6.0.0.1 (lib)
+Completed    semigroupoids-6.0.0.1 (lib)
+Starting     free-5.2 (lib)
+Building     free-5.2 (lib)
+Installing   invariant-0.6.2 (lib)
+Completed    invariant-0.6.2 (lib)
+Installing   attoparsec-0.14.4 (lib)
+Completed    attoparsec-0.14.4 (lib)
+Installing   free-5.2 (lib)
+Completed    free-5.2 (lib)
+Starting     adjunctions-4.4.2 (lib)
+Building     adjunctions-4.4.2 (lib)
+Installing   adjunctions-4.4.2 (lib)
+Completed    adjunctions-4.4.2 (lib)
+Starting     kan-extensions-5.2.5 (lib)
+Building     kan-extensions-5.2.5 (lib)
+Installing   kan-extensions-5.2.5 (lib)
+Completed    kan-extensions-5.2.5 (lib)
+Installing   vector-0.13.1.0 (lib)
+Completed    vector-0.13.1.0 (lib)
+Starting     indexed-traversable-instances-0.1.1.2 (lib)
+Starting     bitvec-1.1.5.0 (lib)
+Building     indexed-traversable-instances-0.1.1.2 (lib)
+Building     bitvec-1.1.5.0 (lib)
+Installing   indexed-traversable-instances-0.1.1.2 (lib)
+Completed    indexed-traversable-instances-0.1.1.2 (lib)
+Starting     lens-5.2.3 (lib)
+Building     lens-5.2.3 (lib)
+Installing   xmonad-contrib-0.18.0.9 (lib)
+Completed    xmonad-contrib-0.18.0.9 (lib)
+Installing   bitvec-1.1.5.0 (lib)
+Completed    bitvec-1.1.5.0 (lib)
+Starting     vector-algorithms-0.9.0.1 (lib)
+Building     vector-algorithms-0.9.0.1 (lib)
+Installing   lens-5.2.3 (lib)
+Completed    lens-5.2.3 (lib)
+Installing   vector-algorithms-0.9.0.1 (lib)
+Completed    vector-algorithms-0.9.0.1 (lib)
+Starting     mono-traversable-1.0.15.3 (lib)
+Building     mono-traversable-1.0.15.3 (lib)
+Installing   mono-traversable-1.0.15.3 (lib)
+Completed    mono-traversable-1.0.15.3 (lib)
+Starting     conduit-1.3.5 (lib)
+Building     conduit-1.3.5 (lib)
+Installing   conduit-1.3.5 (lib)
+Completed    conduit-1.3.5 (lib)
+Starting     conduit-extra-1.3.6 (lib)
+Building     conduit-extra-1.3.6 (lib)
+Installing   conduit-extra-1.3.6 (lib)
+Completed    conduit-extra-1.3.6 (lib)
+Starting     monad-logger-0.3.40 (lib)
+Starting     xml-conduit-1.9.1.3 (all, legacy fallback)
+Building     monad-logger-0.3.40 (lib)
+Building     xml-conduit-1.9.1.3 (all, legacy fallback)
+Installing   monad-logger-0.3.40 (lib)
+Completed    monad-logger-0.3.40 (lib)
+Installing   xml-conduit-1.9.1.3 (all, legacy fallback)
+Completed    xml-conduit-1.9.1.3 (all, legacy fallback)
+Starting     dbus-1.3.2 (lib)
+Building     dbus-1.3.2 (lib)
+Installing   dbus-1.3.2 (lib)
+Completed    dbus-1.3.2 (lib)
+Starting     kb-xmonad-config-0.13 (exe:xmonad-x86_64-linux)
+Building     kb-xmonad-config-0.13 (exe:xmonad-x86_64-linux)
+
+Failed to build exe:xmonad-x86_64-linux from kb-xmonad-config-0.13.
+Build log (
+/home/karolbarski/.cache/cabal/logs/ghc-9.4.8/kb-xmonad-config-0.13-e-xmonad-x86_64-linux-6c07d34e434b54596131e01c9e4bab14c5296da1596f24d00e457cc49892d233.log
+):
+Configuring executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
+Preprocessing executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
+Building executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
+
+on the commandline: warning: [-Wunrecognised-warning-flags]
+    unrecognised warning flag: -W-unused-top-binds
+[1 of 1] Compiling Main             ( config.hs, dist/build/xmonad-x86_64-linux/xmonad-x86_64-linux-tmp/Main.o )
+
+config.hs:111:3: error:
+    • Ambiguous type variable ‘l0’ arising from a use of ‘xmonad’
+      prevents the constraint ‘(Read (l0 Window))’ from being solved.
+      Probable fix: use a type annotation to specify what ‘l0’ should be.
+      Potentially matching instances:
+        instance (Ord k, Read k, Read e) => Read (M.Map k e)
+          -- Defined in ‘Data.Map.Internal’
+        instance (Read (l a), Read (r a)) => Read (Choose l r a)
+          -- Defined in ‘XMonad.Layout’
+        ...plus 37 others
+        ...plus 65 instances involving out-of-scope types
+        (use -fprint-potential-instances to see them all)
+    • In the first argument of ‘(.)’, namely ‘xmonad’
+      In the first argument of ‘($)’, namely
+        ‘xmonad
+           . docks
+               . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook’
+      In a stmt of a 'do' block:
+        xmonad
+          . docks
+              . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook
+          $ def
+              {modMask = kbModMask, focusFollowsMouse = False,
+               clickJustFocuses = False, borderWidth = 3,
+               workspaces = kbWorkspaces, terminal = kbTerminal,
+               normalBorderColor = "#dddddd", focusedBorderColor = "#1681f2",
+               mouseBindings = myMouseBindings, layoutHook = kbLayout,
+               manageHook = kbManageHook, logHook = kbPolybarLogHook dbus,
+               startupHook = myStartupHook}
+    |
+111 |   xmonad . docks . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook $ def
+    |   ^^^^^^
+
+config.hs:130:5: error:
+    • Non type-variable argument
+        in the constraint: LayoutClass l Window
+    • When checking the inferred type
+        urgencyHook :: forall {l :: * -> *}.
+                       LayoutClass l Window =>
+                       XConfig l -> XConfig l
+      In an equation for ‘main'’:
+          main' dbus
+            = do xmonad
+                   . docks
+                       . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook
+                   $ def
+                       {modMask = kbModMask, focusFollowsMouse = False,
+                        clickJustFocuses = False, borderWidth = 3,
+                        workspaces = kbWorkspaces, terminal = kbTerminal,
+                        normalBorderColor = "#dddddd", focusedBorderColor = "#1681f2",
+                        mouseBindings = myMouseBindings, layoutHook = kbLayout,
+                        manageHook = kbManageHook, logHook = kbPolybarLogHook dbus,
+                        startupHook = myStartupHook}
+            where
+                dynProjects = dynamicProjects projects
+                keybindings
+                  = addDescrKeys' ((kbModMask, xK_F1), showKeybindings) myKeys
+                urgencyHook = withUrgencyHook LibNotifyUrgencyHook
+    Suggested fix: Perhaps you intended to use FlexibleContexts
+    |
+130 |     urgencyHook = withUrgencyHook LibNotifyUrgencyHook
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#+end_example
 
 #+name: restart-xmonad
 #+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
