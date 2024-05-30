@@ -5,9 +5,6 @@ import XMonad
 import System.Exit
 import System.Directory             ( doesFileExist )
 import Graphics.X11.ExtraTypes.XF86
-import XMonad.Util.EZConfig
-import XMonad.Util.Loggers
-import XMonad.Util.Ungrab
 import XMonad.Util.NamedActions     ( (^++^)
                                     , NamedAction (..)
                                     , addDescrKeys'
@@ -35,7 +32,6 @@ import qualified Data.Map as M
 import           XMonad.Layout.Gaps                   ( gaps )
 import           XMonad.Layout.Grid                   ( Grid(..) )
 import           XMonad.Layout.Hidden
-import           XMonad.Layout.IM                 
 import qualified XMonad.Layout.Magnifier as Mag
 import           XMonad.Layout.MultiColumns
 import           XMonad.Layout.MultiToggle           ( Toggle(..)
@@ -53,10 +49,6 @@ import           XMonad.Prompt                       ( XPConfig(..)
                                                      , amberXPConfig
                                                      , XPPosition(CenteredAt)
                                                      )
-import           XMonad.Prompt.FuzzyMatch
-import           XMonad.Prompt.Shell
-import           XMonad.Prompt.Window
-
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.FadeInactive        ( fadeInactiveLogHook )
@@ -66,7 +58,6 @@ import XMonad.Hooks.InsertPosition      ( Focus(Newer)
                                         )
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.StatusBar
 import XMonad.Hooks.UrgencyHook         ( UrgencyHook(..)
                                         , withUrgencyHook
                                         , focusUrgent
@@ -80,7 +71,7 @@ import XMonad.Actions.DynamicWorkspaces ( removeWorkspace )
 import XMonad.Actions.FloatKeys         ( keysAbsResizeWindow
                                         , keysResizeWindow
                                         )
-import XMonad.Actions.Plane             ( planeKeys )
+-- import XMonad.Actions.Plane             ( planeKeys )
 import XMonad.Actions.RotSlaves         ( rotSlavesUp )
 import XMonad.Actions.SpawnOn           ( manageSpawn
                                         , spawnOn
@@ -96,19 +87,22 @@ import qualified DBus.Client              as D
 import qualified XMonad.StackSet as W
 import qualified XMonad.Util.NamedWindows as W
 
-import Control.Concurrent (threadDelay)
+-- import Control.Concurrent (threadDelay)
 import Control.Monad      ( replicateM_
                           , unless)
-import qualified XMonad.Layout.LayoutModifier as XMonad.Layout
-import GHC.Data.FastString.Env (mkDFsEnv)
-import XMonad.Actions.GridSelect (bringSelected)
+-- import qualified XMonad.Layout.LayoutModifier as XMonad.Layout
+-- import GHC.Data.FastString.Env (mkDFsEnv)
+-- import XMonad.Actions.GridSelect (bringSelected)
+
 
 main :: IO ()
 main = mkDbusClient >>= main'
 
 main' :: D.Client -> IO ()
 main' dbus = do
-  xmonad . docks . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook $ def
+  xmonad . docks . ewmh . ewmhFullscreen . dynProjects . keybindings 
+    . withUrgencyHook LibNotifyUrgencyHook
+    $ def
     { modMask            = kbModMask -- Rebind Mod to the Super key
     , focusFollowsMouse  = False
     , clickJustFocuses   = False
@@ -127,7 +121,6 @@ main' dbus = do
   where
     dynProjects = dynamicProjects projects
     keybindings = addDescrKeys' ((kbModMask, xK_F1), showKeybindings) myKeys
-    urgencyHook = withUrgencyHook LibNotifyUrgencyHook
 
 -- Perform an arbitrary action each time xmonad starts or is restarted
 -- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
@@ -555,7 +548,7 @@ wrkWs  = "Wrk"
 demoWs = "Demo"
 
 kbWorkspaces =
-  [termWs, hubWs , mailWs, docsWs, devWs, webWs, comWs,  wrkWs, demoWs, "0:VM"]
+  [termWs, hubWs, mailWs, docsWs, devWs, webWs, comWs, wrkWs, demoWs, "0:VM"]
 
 --------------------------------------------------------------------------------
 -- Dynamic Projects
