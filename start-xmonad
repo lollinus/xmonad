@@ -143,4 +143,5 @@ xscreensaver -no-splash &
 # Power Management
 
 # Now, finally, start xmonad
-exec xmonad-x86_64-linux
+#exec xmonad-x86_64-linux
+exec xmonad

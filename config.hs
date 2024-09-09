@@ -288,18 +288,19 @@ data App
   | NameApp AppName AppCommand
   deriving Show
 
-audacious   = ClassApp "Audacious"                             "audacious"
-bottom      = TitleApp "bottom"                                "alacritty -t bottom -e bottom --color gruvbox --default_widget_type proc"
-vlc         = ClassApp "vlc"                                   "vlc"
-scr         = ClassApp "SimpleScreenRecorder"                  "simplescreenrecorder"
-spotify     = ClassApp "Spotify"                               "spotify"
-itunes      = ClassApp "apple-music-for-linux"                 "apple-music-for-linux"
-ringCentral = NameApp  "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge"
-teams       = NameApp  "crx__cifhbcnohmdccbgoicgdjpfamggdegmo" "microsoft-edge"
-signal      = ClassApp "Signal"                                "signal-desktop"
-nautilus    = ClassApp "org.gnome.Nautilus"                    "nautilus"
-forticlient = ClassApp "FortiClient"                           "forticlient"
-ghci        = TitleApp "ghci"                                  "alacritty -t ghci -e ghci"
+audacious       = ClassApp "Audacious"                             "audacious"
+bottom          = TitleApp "bottom"                                "alacritty -t bottom -e bottom --color gruvbox --default_widget_type proc"
+vlc             = ClassApp "vlc"                                   "vlc"
+scr             = ClassApp "SimpleScreenRecorder"                  "simplescreenrecorder"
+spotify         = ClassApp "Spotify"                               "spotify"
+itunes          = ClassApp "apple-music-for-linux"                 "apple-music-for-linux"
+ringCentral_app = NameApp  "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge"
+teams           = NameApp  "crx__cifhbcnohmdccbgoicgdjpfamggdegmo" "microsoft-edge"
+teams4Linux_app = ClassApp "teams-for-linux"                       "teams-for-linux"
+signal_app      = ClassApp "Signal"                                "signal-desktop"
+nautilus        = ClassApp "org.gnome.Nautilus"                    "nautilus"
+forticlient     = ClassApp "FortiClient"                           "forticlient"
+ghci            = TitleApp "ghci"                                  "alacritty -t ghci -e ghci"
 
 kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
  where
@@ -308,10 +309,11 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
    isPopup             = isRole =? "pop-up"
    isSplash            = isInProperty "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_SPLASH"
    isRole              = stringProperty "WM_WINDOW_ROLE"
-   isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams]
-   isSignal            = className =? "Signal"
+   isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeams4Linux]
+   isSignal            = className =? getAppName signal_app
    isRingCentral       = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
    isTeams             = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
+   isTeams4Linux       = className =? "teams-for-linux"
    tileBelow           = insertPosition Below Newer
    doCalendarFloat     = customFloating (W.RationalRect (11 / 15) (1 / 48) (1 / 4) (1 / 8))
    manageScratchpads   = namedScratchpadManageHook scratchpads
@@ -354,7 +356,7 @@ scratchpadApp app = NS (getAppName app) (getAppCommand app) (isInstance app) def
 
 runScratchpadApp = namedScratchpadAction scratchpads . getAppName
 
-scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral, signal, teams, forticlient, ghci ]
+scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral_app, signal_app, teams4Linux_app, teams, forticlient, ghci ]
 
 --------------------------------------------------------------------------------
 
@@ -414,9 +416,10 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Files"           (modm .|. controlMask,  xK_f    ) $ runScratchpadApp nautilus
     , key "Screen recorder" (modm .|. controlMask,  xK_r    ) $ runScratchpadApp scr
     , key "FortiClient"     (modm .|. controlMask,  xK_v    ) $ runScratchpadApp forticlient
-    , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams
-    , key "RingCentral"     (modm .|. controlMask,  xK_p    ) $ runScratchpadApp ringCentral
-    , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signal
+    -- , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams
+    , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams4Linux_app
+    , key "RingCentral"     (modm .|. controlMask,  xK_p    ) $ runScratchpadApp ringCentral_app
+    , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signal_app
     , key "Ghci"            (modm .|. controlMask,  xK_g    ) $ runScratchpadApp ghci
     ] ^++^
   keySet "Screens" switchScreen ^++^
@@ -597,12 +600,13 @@ kbManageHook1 = composeAll . concat $
   , [isIM --> moveToIM]
   ]
   where
-    isIM               = foldr1 (<||>) [isSignal, isRingCentral, isTeams]
+    isIM               = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeams4Linux]
     moveToIM           = doF $ W.shift comWs
     -- to acquire className use `xprop | grep 'CLASS'`
-    isSignal           = className =? "Signal"
+    isSignal           = className =? getAppName signal_app
     isRingCentral      = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
     isTeams            = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
+    isTeams4Linux      = className =? "teams-for-linux"
     kbClassMediaShifts = ["mplayer", "vlc"]
 
 
