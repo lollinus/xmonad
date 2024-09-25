@@ -297,7 +297,8 @@ spotify         = ClassApp "Spotify"                               "spotify"
 itunes          = ClassApp "apple-music-for-linux"                 "apple-music-for-linux"
 ringCentral_app = NameApp  "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge"
 teams           = NameApp  "crx__cifhbcnohmdccbgoicgdjpfamggdegmo" "microsoft-edge"
-teams4Linux_app = ClassApp "teams-for-linux"                       "teams-for-linux"
+teamsBmw        = ClassApp "teams-bmw"                             "teams-bmw"
+teamsCognizant  = ClassApp "teams-cognizant"                       "teams-cognizant"
 signal_app      = ClassApp "Signal"                                "signal-desktop"
 nautilus        = ClassApp "org.gnome.Nautilus"                    "nautilus"
 forticlient     = ClassApp "FortiClient"                           "forticlient"
@@ -310,11 +311,12 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
    isPopup             = isRole =? "pop-up"
    isSplash            = isInProperty "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_SPLASH"
    isRole              = stringProperty "WM_WINDOW_ROLE"
-   isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeams4Linux]
+   isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeamsCognizant, isTeamsBmw]
    isSignal            = className =? getAppName signal_app
    isRingCentral       = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
    isTeams             = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
-   isTeams4Linux       = className =? "teams-for-linux"
+   isTeamsCognizant    = className =? "teams-cognizant"
+   isTeamsBmw          = className =? "teams-bmw"
    tileBelow           = insertPosition Below Newer
    doCalendarFloat     = customFloating (W.RationalRect (11 / 15) (1 / 48) (1 / 4) (1 / 8))
    manageScratchpads   = namedScratchpadManageHook scratchpads
@@ -357,7 +359,7 @@ scratchpadApp app = NS (getAppName app) (getAppCommand app) (isInstance app) def
 
 runScratchpadApp = namedScratchpadAction scratchpads . getAppName
 
-scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral_app, signal_app, teams4Linux_app, teams, forticlient, ghci ]
+scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral_app, signal_app, teamsCognizant, teamsBmw, teams, forticlient, ghci ]
 
 --------------------------------------------------------------------------------
 
@@ -418,7 +420,8 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Screen recorder" (modm .|. controlMask,  xK_r    ) $ runScratchpadApp scr
     , key "FortiClient"     (modm .|. controlMask,  xK_v    ) $ runScratchpadApp forticlient
     -- , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams
-    , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams4Linux_app
+    , key "Teams Cognizant" (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teamsCognizant
+    , key "Teams Bmw"       (modm .|. controlMask,  xK_T    ) $ runScratchpadApp teamsBmw
     , key "RingCentral"     (modm .|. controlMask,  xK_p    ) $ runScratchpadApp ringCentral_app
     , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signal_app
     , key "Ghci"            (modm .|. controlMask,  xK_g    ) $ runScratchpadApp ghci
@@ -601,13 +604,14 @@ kbManageHook1 = composeAll . concat $
   , [isIM --> moveToIM]
   ]
   where
-    isIM               = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeams4Linux]
+    isIM               = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeamsCognizant, isTeamsBmw]
     moveToIM           = doF $ W.shift comWs
     -- to acquire className use `xprop | grep 'CLASS'`
     isSignal           = className =? getAppName signal_app
     isRingCentral      = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
     isTeams            = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
-    isTeams4Linux      = className =? "teams-for-linux"
+    isTeamsCognizant   = className =? "teams-congizant"
+    isTeamsBmw         = className =? "teams-bmw"
     kbClassMediaShifts = ["mplayer", "vlc"]
 
 

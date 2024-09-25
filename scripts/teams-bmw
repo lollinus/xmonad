@@ -1,0 +1,3 @@
+#!/bin/bash
+
+teams-for-linux --class="teams-bmw" --customUserDir="${HOME}/.config/teams/bmw" --appTitle="Teams BMW"
