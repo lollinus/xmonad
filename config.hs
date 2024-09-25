@@ -63,10 +63,10 @@ import XMonad.Hooks.UrgencyHook         ( UrgencyHook(..)
                                         , focusUrgent
                                         )
 import XMonad.Actions.CycleWS
-import XMonad.Actions.DynamicProjects   ( Project(..)
-                                        , dynamicProjects
-                                        , switchProjectPrompt
-                                        )
+-- import XMonad.Actions.DynamicProjects   ( Project(..)
+--                                         , dynamicProjects
+--                                         , switchProjectPrompt
+--                                         )
 import XMonad.Actions.DynamicWorkspaces ( removeWorkspace )
 import XMonad.Actions.FloatKeys         ( keysAbsResizeWindow
                                         , keysResizeWindow
@@ -100,7 +100,7 @@ main = mkDbusClient >>= main'
 
 main' :: D.Client -> IO ()
 main' dbus = do
-  xmonad . docks . ewmh . ewmhFullscreen . dynProjects . keybindings 
+  xmonad . docks . ewmh . ewmhFullscreen . keybindings 
     . withUrgencyHook LibNotifyUrgencyHook
     $ def
     { modMask            = kbModMask -- Rebind Mod to the Super key
@@ -119,12 +119,13 @@ main' dbus = do
     , startupHook        = myStartupHook
     }
   where
-    dynProjects = dynamicProjects projects
+    -- dynProjects = dynamicProjects projects
     keybindings = addDescrKeys' ((kbModMask, xK_F1), showKeybindings) myKeys
 
 -- Perform an arbitrary action each time xmonad starts or is restarted
 -- with mod-q.  Used by, e.g., XMonad.Layout.PerWorkspace to initialize
 -- per-workspace layout choices.
+myStartupHook :: X ()
 myStartupHook = startupHook def
 
 -- original idea: https://pbrisbin.com/posts/using_notify_osd_for_xmonad_notifications/
@@ -407,9 +408,9 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
   keySet "Polybar"
     [ key "Toggle"        (modm              , xK_equal     ) togglePolybar
     ] ^++^
-  keySet "Projects"
-    [ key "Switch prompt" (modm              , xK_o         ) $ switchProjectPrompt projectsTheme
-    ] ^++^
+  -- keySet "Projects"
+  --   [ key "Switch prompt" (modm              , xK_o         ) $ switchProjectPrompt projectsTheme
+  --   ] ^++^
   keySet "Scratchpads"
     [ key "Audacious"       (modm .|. controlMask,  xK_a    ) $ runScratchpadApp audacious
     , key "bottom"          (modm .|. controlMask,  xK_y    ) $ runScratchpadApp bottom
@@ -556,13 +557,13 @@ kbWorkspaces =
 --------------------------------------------------------------------------------
 -- Dynamic Projects
 --
-projects :: [Project]
-projects =
-  [ Project { projectName = "ID8"
-            , projectDirectory = "~/projects/ID8"
-            , projectStartHook = Just $ spawn kbTerminal
-            }
-  ]
+-- projects :: [Project]
+-- projects =
+--   [ Project { projectName = "ID8"
+--             , projectDirectory = "~/projects/ID8"
+--             , projectStartHook = Just $ spawn kbTerminal
+--             }
+--   ]
 
 --------------------------------------------------------------------------------
 
@@ -623,13 +624,13 @@ lowWhite = xmobarColor "#bbbbbb" ""
 yellow   = xmobarColor "#f1fa8c" ""
 red      = xmobarColor "#ff5555" ""
 
-projectsTheme :: XPConfig
-projectsTheme = amberXPConfig
-  { bgHLight = "#002b36"
-  , font     = "xft:Bitstream Vera Sans Mono:size=8:antialias=true"
-  , height   = 50
-  , position = CenteredAt 0.5 0.5
-  }
+-- projectsTheme :: XPConfig
+-- projectsTheme = amberXPConfig
+--   { bgHLight = "#002b36"
+--   , font     = "xft:Bitstream Vera Sans Mono:size=8:antialias=true"
+--   , height   = 50
+--   , position = CenteredAt 0.5 0.5
+--   }
 
 ------------------------------------------------------------------------
 -- Status bars and logging
