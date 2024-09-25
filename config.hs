@@ -94,7 +94,6 @@ import Control.Monad      ( replicateM_
 -- import GHC.Data.FastString.Env (mkDFsEnv)
 -- import XMonad.Actions.GridSelect (bringSelected)
 
-
 main :: IO ()
 main = mkDbusClient >>= main'
 
@@ -282,6 +281,7 @@ type AppName      = String
 type AppTitle     = String
 type AppClassName = String
 type AppCommand   = String
+type AppId        = String
 
 data App
   = ClassApp AppClassName AppCommand
@@ -295,10 +295,17 @@ vlc             = ClassApp "vlc"                                   "vlc"
 scr             = ClassApp "SimpleScreenRecorder"                  "simplescreenrecorder"
 spotify         = ClassApp "Spotify"                               "spotify"
 itunes          = ClassApp "apple-music-for-linux"                 "apple-music-for-linux"
-ringCentral_app = NameApp  "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge"
-teams           = NameApp  "crx__cifhbcnohmdccbgoicgdjpfamggdegmo" "microsoft-edge"
+
+ringCentral_app :: App
+ringCentral_app = ClassApp "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge --profile-directory=Default --app-id=djdehjanccmnmmoknnajakmkgilglkbk \"--app-url=https://app.ringcentral.com/?source=pwa\""
+
+teamsBmw :: App
 teamsBmw        = ClassApp "teams-bmw"                             "teams-bmw"
+
+teamsCognizant :: App
 teamsCognizant  = ClassApp "teams-cognizant"                       "teams-cognizant"
+
+signal_app :: App
 signal_app      = ClassApp "Signal"                                "signal-desktop"
 nautilus        = ClassApp "org.gnome.Nautilus"                    "nautilus"
 forticlient     = ClassApp "FortiClient"                           "forticlient"
@@ -313,10 +320,10 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
    isRole              = stringProperty "WM_WINDOW_ROLE"
    isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeamsCognizant, isTeamsBmw]
    isSignal            = className =? getAppName signal_app
-   isRingCentral       = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
+   isRingCentral       = className =? getAppName ringCentral_app
    isTeams             = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
-   isTeamsCognizant    = className =? "teams-cognizant"
-   isTeamsBmw          = className =? "teams-bmw"
+   isTeamsCognizant    = className =? getAppName teamsCognizant
+   isTeamsBmw          = className =? getAppName teamsBmw
    tileBelow           = insertPosition Below Newer
    doCalendarFloat     = customFloating (W.RationalRect (11 / 15) (1 / 48) (1 / 4) (1 / 8))
    manageScratchpads   = namedScratchpadManageHook scratchpads
@@ -359,7 +366,7 @@ scratchpadApp app = NS (getAppName app) (getAppCommand app) (isInstance app) def
 
 runScratchpadApp = namedScratchpadAction scratchpads . getAppName
 
-scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral_app, signal_app, teamsCognizant, teamsBmw, teams, forticlient, ghci ]
+scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral_app, signal_app, teamsCognizant, teamsBmw, forticlient, ghci ]
 
 --------------------------------------------------------------------------------
 
@@ -509,6 +516,7 @@ filterOutNSP =
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse events
 --
+-- myMouseBindings :: XConfig l -> M.Map (KeyMask, Button) (Window -> X ())
 myMouseBindings XConfig {XMonad.modMask = modm} = M.fromList
 
     -- mod-button1, Set the window to floating mode and move by dragging
