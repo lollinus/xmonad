@@ -236,6 +236,8 @@ kbLayout =
     full    = gapSpaced 2 Full
     column3 = gapSpaced 2 $ ThreeColMid nmaster delta ratio
     grid'   = gapSpaced 2 Grid
+    -- zoomThreeCol = gapSpaced 2 $ Mag.magnifiercz' 1.3 $ ThreeColMid nmaster delta ratio
+
 
     -- The default number of windows in the master pane
     nmaster = 1
@@ -251,7 +253,7 @@ kbLayout =
     gapSpaced g = spacing g . kbGaps g
 
     -- Per workspace layout
-    comLayout = onWorkspace comWs (tiled ||| full)
+    comLayout = onWorkspace comWs (tiled ||| full ||| column3)
     devLayout = onWorkspace devWs (column3 ||| full)
     webLayout = onWorkspace webWs (tiled ||| full)
     wrkLayout = onWorkspace wrkWs (tiled ||| full)
@@ -281,7 +283,6 @@ type AppName      = String
 type AppTitle     = String
 type AppClassName = String
 type AppCommand   = String
-type AppId        = String
 
 data App
   = ClassApp AppClassName AppCommand
