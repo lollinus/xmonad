@@ -13,14 +13,11 @@ import XMonad.Util.NamedActions     ( (^++^)
                                     , subtitle
                                     )
 import XMonad.Util.NamedScratchpad  ( NamedScratchpad(..)
-                                    , customFloating
                                     , defaultFloating
                                     , namedScratchpadAction
                                     , namedScratchpadManageHook
                                     )
-import XMonad.Util.Run              ( safeSpawn
-                                    , spawnPipe
-                                    )
+import XMonad.Util.Run              ( safeSpawn )
 -- import XMonad.Util.SpawnOnce        ( spawnOnce )
 import XMonad.Util.WorkspaceCompare ( getSortByIndex )
 
@@ -45,10 +42,6 @@ import           XMonad.Layout.PerWorkspace          (onWorkspace)
 import           XMonad.Layout.ResizableTile
 import           XMonad.Layout.Tabbed
 import           XMonad.Layout.ThreeColumns
-import           XMonad.Prompt                       ( XPConfig(..)
-                                                     , amberXPConfig
-                                                     , XPPosition(CenteredAt)
-                                                     )
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.FadeInactive        ( fadeInactiveLogHook )
@@ -62,6 +55,7 @@ import XMonad.Hooks.UrgencyHook         ( UrgencyHook(..)
                                         , withUrgencyHook
                                         , focusUrgent
                                         )
+import XMonad.Hooks.Rescreen
 import XMonad.Actions.CycleWS
 -- import XMonad.Actions.DynamicProjects   ( Project(..)
 --                                         , dynamicProjects
@@ -76,7 +70,10 @@ import XMonad.Actions.RotSlaves         ( rotSlavesUp )
 import XMonad.Actions.SpawnOn           ( manageSpawn
                                         , spawnOn
                                         )
-import XMonad.Actions.WithAll           ( killAll )       
+import XMonad.Actions.WithAll           ( killAll )
+
+import XMonad.Actions.PhysicalScreens
+
 
 -- Imports for Polybar --
 -- require installation 'cabal install --lib utf8-string --package-env=.'
@@ -88,8 +85,7 @@ import qualified XMonad.StackSet as W
 import qualified XMonad.Util.NamedWindows as W
 
 -- import Control.Concurrent (threadDelay)
-import Control.Monad      ( replicateM_
-                          , unless)
+import Control.Monad      ( unless )
 -- import qualified XMonad.Layout.LayoutModifier as XMonad.Layout
 -- import GHC.Data.FastString.Env (mkDFsEnv)
 -- import XMonad.Actions.GridSelect (bringSelected)
@@ -99,7 +95,9 @@ main = mkDbusClient >>= main'
 
 main' :: D.Client -> IO ()
 main' dbus = do
-  xmonad . docks . ewmh . ewmhFullscreen . keybindings 
+  xmonad . docks . ewmh . ewmhFullscreen . keybindings
+    . addAfterRescreenHook kbAfterRescreenHook
+    . addRandrChangeHook kbRandrChangeHook
     . withUrgencyHook LibNotifyUrgencyHook
     $ def
     { modMask            = kbModMask -- Rebind Mod to the Super key
@@ -132,9 +130,9 @@ data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
 
 instance UrgencyHook LibNotifyUrgencyHook where
   urgencyHook LibNotifyUrgencyHook w = do
-    name     <- W.getName w
+    windowName <- W.getName w
     maybeIdx <- W.findTag w <$> gets windowset
-    traverse_ (\i -> safeSpawn "notify-send" [show name, "workspace " ++ i]) maybeIdx
+    traverse_ (\i -> safeSpawn "notify-send" [show windowName, "workspace " ++ i]) maybeIdx
 
 ----------------------------------------------------------------------------------
 --  Polybar settings (needs DBus client).
@@ -161,18 +159,18 @@ polybarHook :: D.Client -> PP
 polybarHook dbus =
   let wrapper c s | s /= "NSP" = wrap ("%{F" <> c <> "} ") " %{F-}" s
                   | otherwise  = mempty
-      blue   = "#00bfff"
+      polybarBlue   = "#00bfff"
       -- blue   = "#2E9AFE"
       gray   = "#7F7F7F"
       orange = "#ea4300"
       purple = "#9058c7"
-      red    = "#722222"
+      polybarRed    = "#722222"
   in  def { ppOutput          = dbusOutput dbus
-          , ppCurrent         = wrapper blue
+          , ppCurrent         = wrapper polybarBlue
           , ppVisible         = wrapper gray
           , ppUrgent          = wrapper orange
           , ppHidden          = wrapper gray
-          , ppHiddenNoWindows = wrapper red
+          , ppHiddenNoWindows = wrapper polybarRed
           , ppTitle           = wrapper purple . shorten 90
           }
 
@@ -253,7 +251,7 @@ kbLayout =
     gapSpaced g = spacing g . kbGaps g
 
     -- Per workspace layout
-    comLayout = onWorkspace comWs (tiled ||| full ||| column3)
+    comLayout = onWorkspace comWs (column3 ||| tiled ||| full)
     devLayout = onWorkspace devWs (column3 ||| full)
     webLayout = onWorkspace webWs (tiled ||| full)
     wrkLayout = onWorkspace wrkWs (tiled ||| full)
@@ -290,24 +288,15 @@ data App
   | NameApp AppName AppCommand
   deriving Show
 
-audacious       = ClassApp "Audacious"                             "audacious"
-bottom          = TitleApp "bottom"                                "alacritty -t bottom -e bottom --color gruvbox --default_widget_type proc"
+-- audacious       = ClassApp "Audacious"                             "audacious"
+bottom          = TitleApp "bottom"                                "alacritty -t bottom -e bottom --theme gruvbox --default_widget_type proc"
 vlc             = ClassApp "vlc"                                   "vlc"
 scr             = ClassApp "SimpleScreenRecorder"                  "simplescreenrecorder"
 spotify         = ClassApp "Spotify"                               "spotify"
 itunes          = ClassApp "apple-music-for-linux"                 "apple-music-for-linux"
-
-ringCentral_app :: App
-ringCentral_app = ClassApp "crx__djdehjanccmnmmoknnajakmkgilglkbk" "microsoft-edge --profile-directory=Default --app-id=djdehjanccmnmmoknnajakmkgilglkbk \"--app-url=https://app.ringcentral.com/?source=pwa\""
-
-teamsBmw :: App
 teamsBmw        = ClassApp "teams-bmw"                             "teams-bmw"
-
-teamsCognizant :: App
 teamsCognizant  = ClassApp "teams-cognizant"                       "teams-cognizant"
-
-signal_app :: App
-signal_app      = ClassApp "Signal"                                "signal-desktop"
+signalApp       = ClassApp "Signal"                                "signal-desktop"
 nautilus        = ClassApp "org.gnome.Nautilus"                    "nautilus"
 forticlient     = ClassApp "FortiClient"                           "forticlient"
 ghci            = TitleApp "ghci"                                  "alacritty -t ghci -e ghci"
@@ -319,17 +308,15 @@ kbManageHook = manageApps <+> manageSpawn <+> manageScratchpads
    isPopup             = isRole =? "pop-up"
    isSplash            = isInProperty "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_SPLASH"
    isRole              = stringProperty "WM_WINDOW_ROLE"
-   isIM                = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeamsCognizant, isTeamsBmw]
-   isSignal            = className =? getAppName signal_app
-   isRingCentral       = className =? getAppName ringCentral_app
-   isTeams             = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
+   isIM                = foldr (<||>) (pure False) [isSignal, isTeamsCognizant, isTeamsBmw]
+   isSignal            = className =? getAppName signalApp
    isTeamsCognizant    = className =? getAppName teamsCognizant
    isTeamsBmw          = className =? getAppName teamsBmw
    tileBelow           = insertPosition Below Newer
-   doCalendarFloat     = customFloating (W.RationalRect (11 / 15) (1 / 48) (1 / 4) (1 / 8))
+   -- doCalendarFloat     = customFloating (W.RationalRect (11 / 15) (1 / 48) (1 / 4) (1 / 8))
    manageScratchpads   = namedScratchpadManageHook scratchpads
    anyOf :: [Query Bool] -> Query Bool
-   anyOf = foldl (<||>) (pure False)
+   anyOf = foldr (<||>) (pure False)
    match :: [App] -> Query Bool
    match = anyOf . fmap isInstance
    moveToIM = doF $ W.shift comWs
@@ -367,7 +354,7 @@ scratchpadApp app = NS (getAppName app) (getAppCommand app) (isInstance app) def
 
 runScratchpadApp = namedScratchpadAction scratchpads . getAppName
 
-scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, ringCentral_app, signal_app, teamsCognizant, teamsBmw, forticlient, ghci ]
+scratchpads = scratchpadApp <$> [ bottom, scr, spotify, itunes, nautilus, signalApp, teamsCognizant, teamsBmw, forticlient, ghci ]
 
 --------------------------------------------------------------------------------
 
@@ -376,7 +363,7 @@ kbTerminal = "alacritty" -- gnome-terminal"
 appLauncher = "rofi -modi drun,ssh,window -show drun -show-icons"
 -- appLauncher = "synapse"
 -- calcLauncher = "rofi -show calc -modi calc -no-show-match -no-sort"
-emojiPicker = "rofi -modi emoji -show emoji -emoji-mode copy"
+-- emojiPicker = "rofi -modi emoji -show emoji -emoji-mode copy"
 screenLocker = "multilockscreen -l dim"
 playerctl c = "playerctl --player=spotify,%any " <> c
 
@@ -422,16 +409,14 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
   --   [ key "Switch prompt" (modm              , xK_o         ) $ switchProjectPrompt projectsTheme
   --   ] ^++^
   keySet "Scratchpads"
-    [ key "Audacious"       (modm .|. controlMask,  xK_a    ) $ runScratchpadApp audacious
-    , key "bottom"          (modm .|. controlMask,  xK_y    ) $ runScratchpadApp bottom
+    [ 
+      key "bottom"          (modm .|. controlMask,  xK_y    ) $ runScratchpadApp bottom
     , key "Files"           (modm .|. controlMask,  xK_f    ) $ runScratchpadApp nautilus
     , key "Screen recorder" (modm .|. controlMask,  xK_r    ) $ runScratchpadApp scr
     , key "FortiClient"     (modm .|. controlMask,  xK_v    ) $ runScratchpadApp forticlient
-    -- , key "Teams"           (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teams
     , key "Teams Cognizant" (modm .|. controlMask,  xK_t    ) $ runScratchpadApp teamsCognizant
-    , key "Teams Bmw"       (modm .|. controlMask,  xK_T    ) $ runScratchpadApp teamsBmw
-    , key "RingCentral"     (modm .|. controlMask,  xK_p    ) $ runScratchpadApp ringCentral_app
-    , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signal_app
+    , key "Teams Bmw"       (modm .|. controlMask,  xK_i    ) $ runScratchpadApp teamsBmw
+    , key "Signal"          (modm .|. controlMask,  xK_s    ) $ runScratchpadApp signalApp
     , key "Ghci"            (modm .|. controlMask,  xK_g    ) $ runScratchpadApp ghci
     ] ^++^
   keySet "Screens" switchScreen ^++^
@@ -441,6 +426,7 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
     , key "Restart XMonad"         (modm              , xK_q ) $ spawn "xmonad --recompile; xmonad --restart"
     , key "Capture entire screen"  (modm          , xK_Print ) $ spawn "flameshot full -p ~/Pictures/flameshot/"
     , key "Screenshot"             (0             , xK_Print ) $ spawn "xfce4-screenshooter"
+    , key "Lock Screen"            (modm .|. shiftMask, xK_z ) $ spawn "xscreensaver-command -lock"
     -- , key "Switch keyboard layout" (modm          , xK_F8    ) $ spawn "kls"
     , key "Disable CapsLock"       (modm          , xK_F9    ) $ spawn "setxkbmap -option ctrl:nocaps"
     , key "Switch keyboard Layout" (modm          , xK_Escape) $ spawn "/home/karolbarski/bin/layout_switch.sh"
@@ -478,6 +464,12 @@ myKeys conf@XConfig {XMonad.modMask = modm} =
   keySet "Window Hiding"
     [ key "Hide window"    (modm              , xK_backslash) $ withFocused hideWindow
     , key "UnHide oldest"  (modm .|. shiftMask, xK_backslash) $ popOldestHiddenWindow
+    ] ^++^
+  keySet "Physical Screens"
+    [ key "Previous Neighbour" (modm              , xK_a)      $ onPrevNeighbour def W.view
+    , key "Next Neighbour"     (modm              , xK_o)      $ onNextNeighbour def W.view
+    , key "Prev S Neighbour"   (modm .|. shiftMask, xK_a)      $ onPrevNeighbour def W.shift
+    , key "Next S Neighbour"   (modm .|. shiftMask, xK_o)      $ onNextNeighbour def W.shift
     ] ^++^
   keySet "Workspaces"
     [ key "Next"          (modm              , xK_period    ) nextWS'
@@ -579,6 +571,14 @@ kbWorkspaces =
 
 --------------------------------------------------------------------------------
 
+-- reload wallpaper for current display configuration
+kbAfterRescreenHook :: X ()
+kbAfterRescreenHook = spawn "feh --bg-fill --no-fehbg ~/.wallpapers/haskell-red-noise.png"
+
+-- update monitor configuration
+kbRandrChangeHook :: X ()
+kbRandrChangeHook = spawn "autorandr --chage"
+
 -- Mod4 is the Super / Windows key
 kbModMask = mod4Mask
 
@@ -613,12 +613,10 @@ kbManageHook1 = composeAll . concat $
   , [isIM --> moveToIM]
   ]
   where
-    isIM               = foldr1 (<||>) [isSignal, isRingCentral, isTeams, isTeamsCognizant, isTeamsBmw]
+    isIM               = foldr (<||>) (pure False) [isSignal, isTeamsCognizant, isTeamsBmw]
     moveToIM           = doF $ W.shift comWs
     -- to acquire className use `xprop | grep 'CLASS'`
-    isSignal           = className =? getAppName signal_app
-    isRingCentral      = className =? "crx__djdehjanccmnmmoknnajakmkgilglkbk"
-    isTeams            = className =? "crx__cifhbcnohmdccbgoicgdjpfamggdegmo"
+    isSignal           = className =? getAppName signalApp
     isTeamsCognizant   = className =? "teams-congizant"
     isTeamsBmw         = className =? "teams-bmw"
     kbClassMediaShifts = ["mplayer", "vlc"]

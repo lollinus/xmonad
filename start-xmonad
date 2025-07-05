@@ -65,21 +65,67 @@ xfce4-clipman &
 # Office desktop setup
 if xrandr | grep '^DP-1-3 connected'; then
     #xrandr --output eDP-1-1 --mode 1920x1080 --pos 2560x360 --rotate normal --scale 0.9x0.9 
-    xrandr --output eDP-1-1 --off \
-	    --output DP-1-3 --primary --mode 2560x1440 --pos 0x0 --rotate normal \
-	    --output DP-1-1 --off \
-	    --output HDMI-1-1 --off \
-	    --output DP-1-2 --off \
-	    --output HDMI-1-2 --off
+    xrandr --output eDP-1 --off                                                 \
+           --output DP-1-3 --primary --mode 3440x1440 --pos 0x0 --rotate normal \
+           --output DP-1 --off                                                  \
+           --output DP-1-1 --off                                                \
+           --output DP-1-2 --off                                                \
+           --output DP-1-3 --off                                                \
+           --output DP-1-4 --off                                                \
+           --output DP-1-4 --off                                                \
+           --output DP-2 --off                                                  \
+           --output DP-3 --off                                                  \
+           --output HDMI-1 --off                                                \
+           --output HDMI-2 --off
     MONITOR=DP-1-3
 fi
 
-# Home desktop setup
+# new office layout since 20250522
+if xrandr | grep '^DP-3 connected'; then
+    xrandr --output eDP-1 --off                                                     \
+	   --output DP-3 --primary --mode 2560x1440 --pos 0x0 --rotate normal      \
+	   --output DP-1 --off                                                     \
+	   --output HDMI-1 --off                                                   \
+	   --output DP-2 --off                                                     \
+	   --output HDMI-2 --off
+    MONITOR=DP-3
+fi
+
+
+# Home desktop setup (LNQ)
 if xrandr | grep '^DP-1-1 connected'; then
-    #xrandr --output DP-1-1 --primary --mode 3440x1440 --pos 0x0 --rotate normal 
     xrandr --output DP-1-1 --primary --mode 3440x1440 --pos 0x0 --rotate normal \
 	    --output eDP-1-1 --off
     MONITOR=DP-1-1
+fi
+
+# Home desktop setup (BASEUS)
+if xrandr | grep '^DP-1-1-3 connected'; then
+    xrandr --output DP-1-1-3 --primary --mode 3440x1440 --pos 0x0 --rotate normal \
+	    --output eDP-1-1 --off
+    MONITOR=DP-1-1-3
+fi
+
+# Home desktop setup (BASEUS) since 20250522
+if xrandr | grep '^DP-1-2 connected'; then
+    xrandr --output eDP-1 --off                                                 \
+           --output DP-1-2 --primary --mode 3440x1440 --pos 0x0 --rotate normal \
+           --output DP-1 --off                                                  \
+           --output DP-1-1 --off                                                \
+           --output DP-1-3 --off                                                \
+           --output DP-1-4 --off                                                \
+           --output DP-2 --off                                                  \
+           --output DP-3 --off                                                  \
+           --output HDMI-1 --off                                                \
+           --output HDMI-2 --off
+    MONITOR=DP-1-2
+fi 
+
+# Home desktop setup (BASEUS)
+if xrandr | grep '^DP-1-1-2 connected'; then
+    xrandr --output DP-1-1-2 --primary --mode 3440x1440 --pos 0x0 --rotate normal \
+	    --output eDP-1-1 --off
+    MONITOR=DP-1-1-2
 fi
 
 # When no external monitor connected then activate builtin as primary
@@ -136,14 +182,11 @@ if [ -x /usr/bin/nm-applet ] ; then
     nm-applet --sm-disable --indicator &
 fi
 
-# RingCentral for direct communication
-# ringcentral &
-
 # Fire up screensaver
 xscreensaver -no-splash &
 
 # Power Management
-
 # Now, finally, start xmonad
-#exec xmonad-x86_64-linux
-exec xmonad
+# exec xmonad-x86_64-linux
+# exec xmonad
+exec ${HOME}/.cache/xmonad/xmonad-x86_64-linux

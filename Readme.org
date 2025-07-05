@@ -1,4 +1,4 @@
-#+options: ':t *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+options: ':t *:t -:t ::t <:t H:3 \n:nil ^:nil arch:headline author:t
 #+options: broken-links:nil c:nil creator:nil d:(not "LOGBOOK")
 #+options: date:t e:t email:nil f:t inline:t num:t p:nil pri:nil
 #+options: prop:nil stat:t tags:t tasks:t tex:t timestamp:t title:t
@@ -23,7 +23,7 @@ due to dbus requiring ~bytestring<0.12~ and newer ghc ships
 ✔✔ ghc 9.4.7 recommended,base-4.17.2.0 hls-powered
 
 #+name: get-ghcup
-#+begin_src bash :results raw pp :exports both
+#+begin_src bash :results raw pp :exports both :prologue "exec 2>&1" :epilogue ":"
   curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 #+end_src
 
@@ -106,15 +106,65 @@ Updated package list of hackage.haskell.org to the index-state 2023-03-16T09:32:
 
 TODO: Clone xmonad repository
 
-#+name: initialize xmonad repository
-#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
- cabal init --interactive -p kb-xmonad-config -e lollinus@gmail.com --libandexe --main-is=xmonad.hs -d xmonad -d xmonad-contrib -d dbus -d monad-logger -d utf8-string
+#+name: update submodules
+#+begin_src bash :results raw pp :exports both :prologue "exec 2>&1" :epilogue ":"
+  git submodule update --remote 
 #+end_src
+
+#+RESULTS: update submodules
+
+#+name: log xmonad changes
+#+begin_src bash :results raw pp :exports both :prologue "exec 2>&1" :epilogue ":"
+  git -C xmonad log --oneline 39ae489..07d95ad
+#+end_src
+
+#+RESULTS: log xmonad changes
+: 07d95ad ci: Regenerate haskell-ci
+
+#+name: log xmonad-contrib changes
+#+begin_src bash :results raw pp :exports both :prologue "exec 2>&1" :epilogue ":"
+  git -C xmonad-contrib log --oneline 51196262..4496b4f2
+#+end_src
+
+#+RESULTS: log xmonad-contrib changes
+: 4496b4f2 ci: Regenerate haskell-ci
+
+#+name: list submodules
+#+begin_src bash :results raw pp :exports both
+  git submodule status
+#+end_src
+
+#+RESULTS: list submodules
+: +07d95ad8fc395866200b4587aca8b4db50aa20bd xmonad (v0.15-475-g07d95ad)
+: +4496b4f2d54b31dcf68fb5e1ad545b9afbc3dfcd xmonad-contrib (v0.16-1411-g4496b4f2)
+:  4cc358777ca369012f5289947d53590afa246b23 xmonad-extras (v0.15.2-22-g4cc3587)
+
+Do this only once while initializing repository
+#+name: initialize xmonad repository
+#+begin_src bash :results raw pp :exports both :exec never 
+   cabal init --interactive -p kb-xmonad-config -e lollinus@gmail.com --libandexe --main-is=xmonad.hs -d xmonad -d xmonad-contrib -d dbus -d monad-logger -d utf8-string
+#+end_src
+
+#+RESULTS: initialize xmonad repository
+: Do you wish to overwrite existing files (backups will be created) (y/n)? [default: n]
+
+Cabal Update
+#+begin_src bash :results raw pp :exports both :exec no-export :prologue "exec 2>&1" :epilogue ":"
+  cabal update
+#+end_src
+
+#+RESULTS:
+: Configuration is affected by the following files:
+: - cabal.project.local
+: Downloading the latest package list from hackage.haskell.org
+: Package list of hackage.haskell.org is up to date.
+: The index-state is set to 2025-05-23T06:30:40Z.
+
 
 Build xmonad
 
 #+name: build-xmonad
-#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+#+begin_src bash :dir . :results raw pp :export both :prologue "exec 2>&1" :epilogue ":"
   cabal install --overwrite-policy=always xmonad
 #+end_src
 
@@ -122,516 +172,208 @@ Build xmonad
 #+begin_example
 Wrote tarball sdist to
 /home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.18.0.9.tar.gz
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.18.0.9.tar.gz
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-extras-0.17.1.tar.gz
 Resolving dependencies...
+Build profile: -w ghc-9.12.2 -O1
+In order, the following will be built (use -v for more details):
+ - data-default-0.8.0.1 (lib) (requires build)
+ - hsc2hs-0.68.10 (exe:hsc2hs) (requires build)
+ - data-default-class-0.2.0.0 (lib) (requires download & build)
+ - setlocale-1.0.0.10 (lib) (requires build)
+ - X11-1.10.3 (lib:X11) (requires build)
+ - xmonad-0.18.0 (lib) (requires build)
+ - xmonad-0.18.0 (exe:xmonad) (requires build)
+Downloading  data-default-class-0.2.0.0
+Starting     data-default-0.8.0.1 (lib)
+Starting     hsc2hs-0.68.10 (exe:hsc2hs)
+Downloaded   data-default-class-0.2.0.0
+Building     hsc2hs-0.68.10 (exe:hsc2hs)
+Building     data-default-0.8.0.1 (lib)
+Installing   data-default-0.8.0.1 (lib)
+Completed    data-default-0.8.0.1 (lib)
+Starting     data-default-class-0.2.0.0 (lib)
+Building     data-default-class-0.2.0.0 (lib)
+Installing   data-default-class-0.2.0.0 (lib)
+Completed    data-default-class-0.2.0.0 (lib)
+Starting     X11-1.10.3 (all, legacy fallback: build-type is Configure)
+Building     X11-1.10.3 (all, legacy fallback: build-type is Configure)
+Installing   hsc2hs-0.68.10 (exe:hsc2hs)
+Completed    hsc2hs-0.68.10 (exe:hsc2hs)
+Starting     setlocale-1.0.0.10 (lib)
+Building     setlocale-1.0.0.10 (lib)
+Installing   setlocale-1.0.0.10 (lib)
+Completed    setlocale-1.0.0.10 (lib)
+Installing   X11-1.10.3 (all, legacy fallback: build-type is Configure)
+Completed    X11-1.10.3 (all, legacy fallback: build-type is Configure)
+Starting     xmonad-0.18.0 (lib)
+Building     xmonad-0.18.0 (lib)
+Installing   xmonad-0.18.0 (lib)
+Completed    xmonad-0.18.0 (lib)
+Starting     xmonad-0.18.0 (exe:xmonad)
+Building     xmonad-0.18.0 (exe:xmonad)
+Installing   xmonad-0.18.0 (exe:xmonad)
+Completed    xmonad-0.18.0 (exe:xmonad)
 Symlinking 'xmonad' to '/home/karolbarski/.local/bin/xmonad'
 #+end_example
 
+#+begin_src bash :dir :results raw pp :export both :prologue "exec 2>&1" :epilogue ":"
+  stack build
+  stack install
+#+end_src
+
+#+RESULTS:
+#+begin_example
+kb-xmonad-config> build (exe) with ghc-9.6.6
+kb-xmonad-config> Preprocessing executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
+kb-xmonad-config> Building executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
+kb-xmonad-config>
+kb-xmonad-config> on the commandline: warning: [-Wunrecognised-warning-flags]
+kb-xmonad-config>     unrecognised warning flag: -W-unused-top-binds
+kb-xmonad-config> [1 of 1] Compiling Main [Source file changed]
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:181:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘kbDefaultLayouts’
+kb-xmonad-config>     |
+kb-xmonad-config> 181 | kbDefaultLayouts = smartBorders $ avoidStruts $ hiddenWindows $
+kb-xmonad-config>     | ^^^^^^^^^^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:213:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘chatLayout’
+kb-xmonad-config>     |
+kb-xmonad-config> 213 | chatLayout = smartBorders $ avoidStruts $ hiddenWindows . Mag.magnifiercz 1.5 $ multiCol [1] 1 0.01 (-0.5)
+kb-xmonad-config>     | ^^^^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:220:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘gimpLayout’
+kb-xmonad-config>     |
+kb-xmonad-config> 220 | gimpLayout = smartBorders $ avoidStruts $ ThreeColMid 1 (3/100) (3/4)
+kb-xmonad-config>     | ^^^^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:609:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘kbManageHook1’
+kb-xmonad-config>     |
+kb-xmonad-config> 609 | kbManageHook1 = composeAll . concat $
+kb-xmonad-config>     | ^^^^^^^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:627:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘ppWindow’
+kb-xmonad-config>     |
+kb-xmonad-config> 627 | ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten 20
+kb-xmonad-config>     | ^^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:630:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘blue’
+kb-xmonad-config>     |
+kb-xmonad-config> 630 | blue     = xmobarColor "#00bfff" ""
+kb-xmonad-config>     | ^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:631:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘green’
+kb-xmonad-config>     |
+kb-xmonad-config> 631 | green    = xmobarColor "#00fa9a" ""
+kb-xmonad-config>     | ^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:632:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘magenta’
+kb-xmonad-config>     |
+kb-xmonad-config> 632 | magenta  = xmobarColor "#ff79c6" ""
+kb-xmonad-config>     | ^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:633:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘white’
+kb-xmonad-config>     |
+kb-xmonad-config> 633 | white    = xmobarColor "#f8f8f2" ""
+kb-xmonad-config>     | ^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:634:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘lowWhite’
+kb-xmonad-config>     |
+kb-xmonad-config> 634 | lowWhite = xmobarColor "#bbbbbb" ""
+kb-xmonad-config>     | ^^^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:635:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘yellow’
+kb-xmonad-config>     |
+kb-xmonad-config> 635 | yellow   = xmobarColor "#f1fa8c" ""
+kb-xmonad-config>     | ^^^^^^
+kb-xmonad-config>
+kb-xmonad-config> /home/karolbarski/.config/xmonad/config.hs:636:1: warning: [-Wunused-top-binds]
+kb-xmonad-config>     Defined but not used: ‘red’
+kb-xmonad-config>     |
+kb-xmonad-config> 636 | red      = xmobarColor "#ff5555" ""
+kb-xmonad-config>     | ^^^
+kb-xmonad-config>
+kb-xmonad-config> on the commandline: warning: [-Wunrecognised-warning-flags]
+kb-xmonad-config>     unrecognised warning flag: -W-unused-top-binds
+kb-xmonad-config> [2 of 2] Linking .stack-work/dist/x86_64-linux/ghc-9.6.6/build/xmonad-x86_64-linux/xmonad-x86_64-linux [Objects changed]
+kb-xmonad-config> copy/register
+kb-xmonad-config> Installing executable xmonad-x86_64-linux in /home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin
+Copying from
+/home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad
+to /home/karolbarski/.local/bin/xmonad.
+Copying from
+/home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad-x86_64-linux
+to /home/karolbarski/.local/bin/xmonad-x86_64-linux.
+Copied executables to /home/karolbarski/.local/bin/:
+,* xmonad
+,* xmonad-x86_64-linux
+#+end_example
+
 #+name: build-xmonad-config
-#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both :prologue "exec 2>&1" :epilogue ":"
   xmonad --recompile
 #+end_src
 
 #+RESULTS: build-xmonad-config
-#+begin_example
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/kb-xmonad-config-0.13.tar.gz
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-0.18.0.9.tar.gz
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-contrib-0.18.0.9.tar.gz
-Wrote tarball sdist to
-/home/karolbarski/.config/xmonad/dist-newstyle/sdist/xmonad-extras-0.17.1.tar.gz
-Resolving dependencies...
-Build profile: -w ghc-9.4.8 -O2
-In order, the following will be built (use -v for more details):
- - OneTuple-0.4.1.1 (lib) (requires build)
- - StateVar-1.2.2 (lib) (requires build)
- - attoparsec-0.14.4 (lib:attoparsec-internal) (requires build)
- - auto-update-0.1.6 (lib) (requires build)
- - base-orphans-0.9.1 (lib) (requires build)
- - blaze-builder-0.4.2.3 (lib) (requires build)
- - cabal-doctest-1.0.9 (lib) (requires build)
- - call-stack-0.4.0 (lib) (requires build)
- - cereal-0.5.8.3 (lib) (requires build)
- - easy-file-0.2.5 (lib) (requires build)
- - hashable-1.4.3.0 (lib) (requires build)
- - integer-logarithms-1.0.3.1 (lib) (requires build)
- - monad-loops-0.4.3 (lib) (requires build)
- - network-3.1.4.0 (lib:network) (requires build)
- - old-locale-1.0.0.7 (lib) (requires build)
- - parallel-3.2.2.0 (lib) (requires build)
- - primitive-0.9.0.0 (lib) (requires build)
- - reflection-2.1.7 (lib) (requires build)
- - semigroups-0.20 (lib) (requires build)
- - split-0.2.5 (lib) (requires download & build)
- - splitmix-0.1.0.5 (lib) (requires build)
- - stm-chans-3.0.0.9 (lib) (requires build)
- - tagged-0.8.8 (lib) (requires build)
- - th-abstraction-0.6.0.0 (lib) (requires build)
- - transformers-compat-0.7.2 (lib) (requires build)
- - unix-compat-0.7.1 (lib) (requires build)
- - unliftio-core-0.2.1.0 (lib) (requires build)
- - utf8-string-1.0.2 (lib) (requires build)
- - vector-stream-0.1.0.1 (lib) (requires download & build)
- - void-0.7.3 (lib) (requires build)
- - xml-types-0.3.8 (lib) (requires build)
- - zlib-0.7.0.0 (lib) (requires download & build)
- - contravariant-1.5.5 (lib) (requires build)
- - blaze-markup-0.8.3.0 (lib) (requires build)
- - unordered-containers-0.2.20 (lib) (requires download & build)
- - async-2.2.5 (lib) (requires build)
- - old-time-1.1.0.4 (lib:old-time) (requires build)
- - scientific-0.3.7.0 (lib) (requires build)
- - random-1.2.1.2 (lib) (requires download & build)
- - foldable1-classes-compat-0.1 (lib) (requires build)
- - distributive-0.6.2.1 (lib) (requires build)
- - assoc-1.1 (lib) (requires build)
- - th-lift-0.8.4 (lib) (requires build)
- - transformers-base-0.4.6 (lib) (requires build)
- - resourcet-1.3.0 (lib) (requires build)
- - X11-xft-0.3.4 (lib) (requires build)
- - vector-0.13.1.0 (lib) (requires build)
- - blaze-html-0.9.1.2 (lib) (requires build)
- - typed-process-0.2.11.1 (lib) (requires build)
- - unix-time-0.4.12 (lib:unix-time) (requires download & build)
- - attoparsec-0.14.4 (lib) (requires build)
- - streaming-commons-0.2.2.6 (lib) (requires build)
- - indexed-traversable-0.1.3 (lib) (requires build)
- - these-1.2 (lib) (requires build)
- - monad-control-1.0.3.1 (lib) (requires build)
- - xmonad-contrib-0.18.0.9 (lib) (requires build)
- - bitvec-1.1.5.0 (lib) (requires build)
- - fast-logger-3.2.2 (lib) (requires build)
- - indexed-traversable-instances-0.1.1.2 (lib) (requires build)
- - comonad-5.0.8 (lib) (requires build)
- - strict-0.5 (lib) (requires build)
- - lifted-base-0.2.3.12 (lib) (requires build)
- - vector-algorithms-0.9.0.1 (lib) (requires build)
- - bifunctors-5.6.1 (lib) (requires build)
- - mono-traversable-1.0.15.3 (lib) (requires build)
- - semigroupoids-6.0.0.1 (lib) (requires build)
- - profunctors-5.6.2 (lib) (requires build)
- - conduit-1.3.5 (lib) (requires build)
- - invariant-0.6.2 (lib) (requires build)
- - free-5.2 (lib) (requires build)
- - conduit-extra-1.3.6 (lib) (requires build)
- - adjunctions-4.4.2 (lib) (requires build)
- - xml-conduit-1.9.1.3 (lib:xml-conduit) (requires build)
- - monad-logger-0.3.40 (lib) (requires build)
- - kan-extensions-5.2.5 (lib) (requires build)
- - lens-5.2.3 (lib) (requires build)
- - dbus-1.3.2 (lib) (requires download & build)
- - kb-xmonad-config-0.13 (exe:xmonad-x86_64-linux) (requires build)
-Downloading  split-0.2.5
-Starting     StateVar-1.2.2 (lib)
-Starting     OneTuple-0.4.1.1 (lib)
-Starting     base-orphans-0.9.1 (lib)
-Starting     cabal-doctest-1.0.9 (lib)
-Starting     call-stack-0.4.0 (lib)
-Starting     cereal-0.5.8.3 (lib)
-Starting     easy-file-0.2.5 (lib)
-Starting     integer-logarithms-1.0.3.1 (lib)
-Starting     auto-update-0.1.6 (lib)
-Starting     attoparsec-0.14.4 (lib:attoparsec-internal)
-Starting     blaze-builder-0.4.2.3 (lib)
-Starting     hashable-1.4.3.0 (lib)
-Building     StateVar-1.2.2 (lib)
-Building     OneTuple-0.4.1.1 (lib)
-Building     base-orphans-0.9.1 (lib)
-Building     call-stack-0.4.0 (lib)
-Building     cabal-doctest-1.0.9 (lib)
-Building     cereal-0.5.8.3 (lib)
-Building     integer-logarithms-1.0.3.1 (lib)
-Building     easy-file-0.2.5 (lib)
-Downloaded   split-0.2.5
-Downloading  vector-stream-0.1.0.1
-Building     auto-update-0.1.6 (lib)
-Building     attoparsec-0.14.4 (lib:attoparsec-internal)
-Building     hashable-1.4.3.0 (lib)
-Building     blaze-builder-0.4.2.3 (lib)
-Installing   OneTuple-0.4.1.1 (lib)
-Downloaded   vector-stream-0.1.0.1
-Downloading  random-1.2.1.2
-Completed    OneTuple-0.4.1.1 (lib)
-Starting     monad-loops-0.4.3 (lib)
-Installing   StateVar-1.2.2 (lib)
-Installing   call-stack-0.4.0 (lib)
-Installing   base-orphans-0.9.1 (lib)
-Downloaded   random-1.2.1.2
-Downloading  unix-time-0.4.12
-Completed    call-stack-0.4.0 (lib)
-Starting     network-3.1.4.0 (all, legacy fallback)
-Downloaded   unix-time-0.4.12
-Downloading  zlib-0.7.0.0
-Completed    StateVar-1.2.2 (lib)
-Starting     old-locale-1.0.0.7 (lib)
-Installing   auto-update-0.1.6 (lib)
-Completed    base-orphans-0.9.1 (lib)
-Starting     parallel-3.2.2.0 (lib)
-Building     monad-loops-0.4.3 (lib)
-Installing   easy-file-0.2.5 (lib)
-Completed    auto-update-0.1.6 (lib)
-Starting     primitive-0.9.0.0 (lib)
-Downloaded   zlib-0.7.0.0
-Downloading  unordered-containers-0.2.20
-Completed    easy-file-0.2.5 (lib)
-Starting     reflection-2.1.7 (lib)
-Installing   integer-logarithms-1.0.3.1 (lib)
-Installing   cabal-doctest-1.0.9 (lib)
-Building     old-locale-1.0.0.7 (lib)
-Downloaded   unordered-containers-0.2.20
-Downloading  dbus-1.3.2
-Building     parallel-3.2.2.0 (lib)
-Completed    integer-logarithms-1.0.3.1 (lib)
-Starting     semigroups-0.20 (lib)
-Installing   attoparsec-0.14.4 (lib:attoparsec-internal)
-Completed    cabal-doctest-1.0.9 (lib)
-Starting     split-0.2.5 (lib)
-Building     primitive-0.9.0.0 (lib)
-Completed    attoparsec-0.14.4 (lib:attoparsec-internal)
-Starting     splitmix-0.1.0.5 (lib)
-Building     reflection-2.1.7 (lib)
-Installing   old-locale-1.0.0.7 (lib)
-Downloaded   dbus-1.3.2
-Installing   monad-loops-0.4.3 (lib)
-Building     semigroups-0.20 (lib)
-Building     split-0.2.5 (lib)
-Completed    old-locale-1.0.0.7 (lib)
-Starting     stm-chans-3.0.0.9 (lib)
-Completed    monad-loops-0.4.3 (lib)
-Starting     tagged-0.8.8 (lib)
-Building     splitmix-0.1.0.5 (lib)
-Installing   semigroups-0.20 (lib)
-Installing   parallel-3.2.2.0 (lib)
-Building     stm-chans-3.0.0.9 (lib)
-Completed    semigroups-0.20 (lib)
-Starting     th-abstraction-0.6.0.0 (lib)
-Building     tagged-0.8.8 (lib)
-Completed    parallel-3.2.2.0 (lib)
-Installing   split-0.2.5 (lib)
-Starting     transformers-compat-0.7.2 (lib)
-Installing   blaze-builder-0.4.2.3 (lib)
-Installing   hashable-1.4.3.0 (lib)
-Completed    split-0.2.5 (lib)
-Starting     unix-compat-0.7.1 (lib)
-Completed    blaze-builder-0.4.2.3 (lib)
-Building     th-abstraction-0.6.0.0 (lib)
-Starting     unliftio-core-0.2.1.0 (lib)
-Completed    hashable-1.4.3.0 (lib)
-Starting     utf8-string-1.0.2 (lib)
-Building     transformers-compat-0.7.2 (lib)
-Installing   splitmix-0.1.0.5 (lib)
-Building     unix-compat-0.7.1 (lib)
-Completed    splitmix-0.1.0.5 (lib)
-Starting     vector-stream-0.1.0.1 (lib)
-Building     unliftio-core-0.2.1.0 (lib)
-Installing   stm-chans-3.0.0.9 (lib)
-Building     utf8-string-1.0.2 (lib)
-Completed    stm-chans-3.0.0.9 (lib)
-Starting     void-0.7.3 (lib)
-Building     vector-stream-0.1.0.1 (lib)
-Installing   unliftio-core-0.2.1.0 (lib)
-Installing   tagged-0.8.8 (lib)
-Building     network-3.1.4.0 (all, legacy fallback)
-Completed    unliftio-core-0.2.1.0 (lib)
-Starting     xml-types-0.3.8 (lib)
-Building     void-0.7.3 (lib)
-Installing   unix-compat-0.7.1 (lib)
-Completed    tagged-0.8.8 (lib)
-Starting     zlib-0.7.0.0 (lib)
-Completed    unix-compat-0.7.1 (lib)
-Starting     contravariant-1.5.5 (lib)
-Installing   reflection-2.1.7 (lib)
-Installing   void-0.7.3 (lib)
-Completed    reflection-2.1.7 (lib)
-Starting     old-time-1.1.0.4 (all, legacy fallback)
-Building     xml-types-0.3.8 (lib)
-Completed    void-0.7.3 (lib)
-Starting     blaze-markup-0.8.3.0 (lib)
-Building     zlib-0.7.0.0 (lib)
-Building     contravariant-1.5.5 (lib)
-Building     blaze-markup-0.8.3.0 (lib)
-Installing   transformers-compat-0.7.2 (lib)
-Completed    transformers-compat-0.7.2 (lib)
-Starting     unordered-containers-0.2.20 (lib)
-Installing   contravariant-1.5.5 (lib)
-Completed    contravariant-1.5.5 (lib)
-Starting     async-2.2.5 (lib)
-Building     unordered-containers-0.2.20 (lib)
-Building     old-time-1.1.0.4 (all, legacy fallback)
-Building     async-2.2.5 (lib)
-Installing   utf8-string-1.0.2 (lib)
-Installing   vector-stream-0.1.0.1 (lib)
-Completed    utf8-string-1.0.2 (lib)
-Starting     random-1.2.1.2 (lib)
-Completed    vector-stream-0.1.0.1 (lib)
-Starting     foldable1-classes-compat-0.1 (lib)
-Installing   th-abstraction-0.6.0.0 (lib)
-Completed    th-abstraction-0.6.0.0 (lib)
-Starting     distributive-0.6.2.1 (lib)
-Building     random-1.2.1.2 (lib)
-Building     foldable1-classes-compat-0.1 (lib)
-Installing   xml-types-0.3.8 (lib)
-Completed    xml-types-0.3.8 (lib)
-Starting     assoc-1.1 (lib)
-Building     distributive-0.6.2.1 (lib)
-Installing   async-2.2.5 (lib)
-Installing   cereal-0.5.8.3 (lib)
-Installing   primitive-0.9.0.0 (lib)
-Building     assoc-1.1 (lib)
-Completed    async-2.2.5 (lib)
-Starting     transformers-base-0.4.6 (lib)
-Installing   zlib-0.7.0.0 (lib)
-Completed    cereal-0.5.8.3 (lib)
-Starting     X11-xft-0.3.4 (lib)
-Completed    primitive-0.9.0.0 (lib)
-Starting     th-lift-0.8.4 (lib)
-Completed    zlib-0.7.0.0 (lib)
-Starting     typed-process-0.2.11.1 (lib)
-Installing   assoc-1.1 (lib)
-Installing   distributive-0.6.2.1 (lib)
-Installing   old-time-1.1.0.4 (all, legacy fallback)
-Building     X11-xft-0.3.4 (lib)
-Building     transformers-base-0.4.6 (lib)
-Completed    assoc-1.1 (lib)
-Starting     vector-0.13.1.0 (lib)
-Completed    distributive-0.6.2.1 (lib)
-Starting     scientific-0.3.7.0 (lib)
-Building     th-lift-0.8.4 (lib)
-Completed    old-time-1.1.0.4 (all, legacy fallback)
-Building     typed-process-0.2.11.1 (lib)
-Starting     resourcet-1.3.0 (lib)
-Installing   foldable1-classes-compat-0.1 (lib)
-Building     vector-0.13.1.0 (lib)
-Completed    foldable1-classes-compat-0.1 (lib)
-Starting     unix-time-0.4.12 (all, legacy fallback)
-Installing   transformers-base-0.4.6 (lib)
-Building     scientific-0.3.7.0 (lib)
-Building     resourcet-1.3.0 (lib)
-Completed    transformers-base-0.4.6 (lib)
-Starting     these-1.2 (lib)
-Installing   X11-xft-0.3.4 (lib)
-Building     these-1.2 (lib)
-Installing   th-lift-0.8.4 (lib)
-Completed    X11-xft-0.3.4 (lib)
-Starting     indexed-traversable-0.1.3 (lib)
-Completed    th-lift-0.8.4 (lib)
-Starting     monad-control-1.0.3.1 (lib)
-Installing   network-3.1.4.0 (all, legacy fallback)
-Installing   typed-process-0.2.11.1 (lib)
-Completed    network-3.1.4.0 (all, legacy fallback)
-Building     indexed-traversable-0.1.3 (lib)
-Completed    typed-process-0.2.11.1 (lib)
-Building     monad-control-1.0.3.1 (lib)
-Installing   resourcet-1.3.0 (lib)
-Installing   blaze-markup-0.8.3.0 (lib)
-Completed    resourcet-1.3.0 (lib)
-Completed    blaze-markup-0.8.3.0 (lib)
-Starting     blaze-html-0.9.1.2 (lib)
-Building     unix-time-0.4.12 (all, legacy fallback)
-Installing   monad-control-1.0.3.1 (lib)
-Building     blaze-html-0.9.1.2 (lib)
-Completed    monad-control-1.0.3.1 (lib)
-Starting     lifted-base-0.2.3.12 (lib)
-Building     lifted-base-0.2.3.12 (lib)
-Installing   these-1.2 (lib)
-Completed    these-1.2 (lib)
-Starting     strict-0.5 (lib)
-Installing   unix-time-0.4.12 (all, legacy fallback)
-Building     strict-0.5 (lib)
-Completed    unix-time-0.4.12 (all, legacy fallback)
-Starting     fast-logger-3.2.2 (lib)
-Installing   lifted-base-0.2.3.12 (lib)
-Installing   scientific-0.3.7.0 (lib)
-Building     fast-logger-3.2.2 (lib)
-Completed    lifted-base-0.2.3.12 (lib)
-Completed    scientific-0.3.7.0 (lib)
-Starting     attoparsec-0.14.4 (lib)
-Installing   indexed-traversable-0.1.3 (lib)
-Completed    indexed-traversable-0.1.3 (lib)
-Starting     comonad-5.0.8 (lib)
-Building     attoparsec-0.14.4 (lib)
-Building     comonad-5.0.8 (lib)
-Installing   fast-logger-3.2.2 (lib)
-Completed    fast-logger-3.2.2 (lib)
-Installing   comonad-5.0.8 (lib)
-Installing   strict-0.5 (lib)
-Completed    comonad-5.0.8 (lib)
-Starting     bifunctors-5.6.1 (lib)
-Completed    strict-0.5 (lib)
-Building     bifunctors-5.6.1 (lib)
-Installing   random-1.2.1.2 (lib)
-Completed    random-1.2.1.2 (lib)
-Starting     streaming-commons-0.2.2.6 (lib)
-Starting     xmonad-contrib-0.18.0.9 (lib)
-Building     streaming-commons-0.2.2.6 (lib)
-Building     xmonad-contrib-0.18.0.9 (lib)
-Installing   unordered-containers-0.2.20 (lib)
-Completed    unordered-containers-0.2.20 (lib)
-Installing   streaming-commons-0.2.2.6 (lib)
-Completed    streaming-commons-0.2.2.6 (lib)
-Installing   blaze-html-0.9.1.2 (lib)
-Completed    blaze-html-0.9.1.2 (lib)
-Installing   bifunctors-5.6.1 (lib)
-Completed    bifunctors-5.6.1 (lib)
-Starting     profunctors-5.6.2 (lib)
-Starting     semigroupoids-6.0.0.1 (lib)
-Building     profunctors-5.6.2 (lib)
-Building     semigroupoids-6.0.0.1 (lib)
-Installing   profunctors-5.6.2 (lib)
-Completed    profunctors-5.6.2 (lib)
-Starting     invariant-0.6.2 (lib)
-Building     invariant-0.6.2 (lib)
-Installing   semigroupoids-6.0.0.1 (lib)
-Completed    semigroupoids-6.0.0.1 (lib)
-Starting     free-5.2 (lib)
-Building     free-5.2 (lib)
-Installing   invariant-0.6.2 (lib)
-Completed    invariant-0.6.2 (lib)
-Installing   attoparsec-0.14.4 (lib)
-Completed    attoparsec-0.14.4 (lib)
-Installing   free-5.2 (lib)
-Completed    free-5.2 (lib)
-Starting     adjunctions-4.4.2 (lib)
-Building     adjunctions-4.4.2 (lib)
-Installing   adjunctions-4.4.2 (lib)
-Completed    adjunctions-4.4.2 (lib)
-Starting     kan-extensions-5.2.5 (lib)
-Building     kan-extensions-5.2.5 (lib)
-Installing   kan-extensions-5.2.5 (lib)
-Completed    kan-extensions-5.2.5 (lib)
-Installing   vector-0.13.1.0 (lib)
-Completed    vector-0.13.1.0 (lib)
-Starting     indexed-traversable-instances-0.1.1.2 (lib)
-Starting     bitvec-1.1.5.0 (lib)
-Building     indexed-traversable-instances-0.1.1.2 (lib)
-Building     bitvec-1.1.5.0 (lib)
-Installing   indexed-traversable-instances-0.1.1.2 (lib)
-Completed    indexed-traversable-instances-0.1.1.2 (lib)
-Starting     lens-5.2.3 (lib)
-Building     lens-5.2.3 (lib)
-Installing   xmonad-contrib-0.18.0.9 (lib)
-Completed    xmonad-contrib-0.18.0.9 (lib)
-Installing   bitvec-1.1.5.0 (lib)
-Completed    bitvec-1.1.5.0 (lib)
-Starting     vector-algorithms-0.9.0.1 (lib)
-Building     vector-algorithms-0.9.0.1 (lib)
-Installing   lens-5.2.3 (lib)
-Completed    lens-5.2.3 (lib)
-Installing   vector-algorithms-0.9.0.1 (lib)
-Completed    vector-algorithms-0.9.0.1 (lib)
-Starting     mono-traversable-1.0.15.3 (lib)
-Building     mono-traversable-1.0.15.3 (lib)
-Installing   mono-traversable-1.0.15.3 (lib)
-Completed    mono-traversable-1.0.15.3 (lib)
-Starting     conduit-1.3.5 (lib)
-Building     conduit-1.3.5 (lib)
-Installing   conduit-1.3.5 (lib)
-Completed    conduit-1.3.5 (lib)
-Starting     conduit-extra-1.3.6 (lib)
-Building     conduit-extra-1.3.6 (lib)
-Installing   conduit-extra-1.3.6 (lib)
-Completed    conduit-extra-1.3.6 (lib)
-Starting     monad-logger-0.3.40 (lib)
-Starting     xml-conduit-1.9.1.3 (all, legacy fallback)
-Building     monad-logger-0.3.40 (lib)
-Building     xml-conduit-1.9.1.3 (all, legacy fallback)
-Installing   monad-logger-0.3.40 (lib)
-Completed    monad-logger-0.3.40 (lib)
-Installing   xml-conduit-1.9.1.3 (all, legacy fallback)
-Completed    xml-conduit-1.9.1.3 (all, legacy fallback)
-Starting     dbus-1.3.2 (lib)
-Building     dbus-1.3.2 (lib)
-Installing   dbus-1.3.2 (lib)
-Completed    dbus-1.3.2 (lib)
-Starting     kb-xmonad-config-0.13 (exe:xmonad-x86_64-linux)
-Building     kb-xmonad-config-0.13 (exe:xmonad-x86_64-linux)
+: XMonad will use build script at "/home/karolbarski/.config/xmonad/build" to recompile.
+: XMonad recompiling (forced).
+: XMonad recompilation process exited with success!
 
-Failed to build exe:xmonad-x86_64-linux from kb-xmonad-config-0.13.
-Build log (
-/home/karolbarski/.cache/cabal/logs/ghc-9.4.8/kb-xmonad-config-0.13-e-xmonad-x86_64-linux-6c07d34e434b54596131e01c9e4bab14c5296da1596f24d00e457cc49892d233.log
-):
-Configuring executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
-Preprocessing executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
-Building executable 'xmonad-x86_64-linux' for kb-xmonad-config-0.13..
+After recompilation =${HOME}/.cache/xmonad-x86_64-linux= link need to be
+updated to new binary location.
 
-on the commandline: warning: [-Wunrecognised-warning-flags]
-    unrecognised warning flag: -W-unused-top-binds
-[1 of 1] Compiling Main             ( config.hs, dist/build/xmonad-x86_64-linux/xmonad-x86_64-linux-tmp/Main.o )
+#+begin_src shell :results raw pp :export both
+ls -lha ~/.cache/xmonad
+#+end_src
 
-config.hs:111:3: error:
-    • Ambiguous type variable ‘l0’ arising from a use of ‘xmonad’
-      prevents the constraint ‘(Read (l0 Window))’ from being solved.
-      Probable fix: use a type annotation to specify what ‘l0’ should be.
-      Potentially matching instances:
-        instance (Ord k, Read k, Read e) => Read (M.Map k e)
-          -- Defined in ‘Data.Map.Internal’
-        instance (Read (l a), Read (r a)) => Read (Choose l r a)
-          -- Defined in ‘XMonad.Layout’
-        ...plus 37 others
-        ...plus 65 instances involving out-of-scope types
-        (use -fprint-potential-instances to see them all)
-    • In the first argument of ‘(.)’, namely ‘xmonad’
-      In the first argument of ‘($)’, namely
-        ‘xmonad
-           . docks
-               . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook’
-      In a stmt of a 'do' block:
-        xmonad
-          . docks
-              . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook
-          $ def
-              {modMask = kbModMask, focusFollowsMouse = False,
-               clickJustFocuses = False, borderWidth = 3,
-               workspaces = kbWorkspaces, terminal = kbTerminal,
-               normalBorderColor = "#dddddd", focusedBorderColor = "#1681f2",
-               mouseBindings = myMouseBindings, layoutHook = kbLayout,
-               manageHook = kbManageHook, logHook = kbPolybarLogHook dbus,
-               startupHook = myStartupHook}
-    |
-111 |   xmonad . docks . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook $ def
-    |   ^^^^^^
+#+RESULTS:
+: razem 16K
+: drwxrwxr-x  2 karolbarski karolbarski 4,0K lut 27 12:01 .
+: drwxrwxr-x 63 karolbarski karolbarski 4,0K mar 12 08:05 ..
+: -rw-------  1 karolbarski karolbarski   56 maj 24  2024 prompt-history
+: lrwxrwxrwx  1 karolbarski karolbarski  160 lut 27 12:01 xmonad-x86_64-linux -> /home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad-x86_64-linux
 
-config.hs:130:5: error:
-    • Non type-variable argument
-        in the constraint: LayoutClass l Window
-    • When checking the inferred type
-        urgencyHook :: forall {l :: * -> *}.
-                       LayoutClass l Window =>
-                       XConfig l -> XConfig l
-      In an equation for ‘main'’:
-          main' dbus
-            = do xmonad
-                   . docks
-                       . ewmh . ewmhFullscreen . dynProjects . keybindings . urgencyHook
-                   $ def
-                       {modMask = kbModMask, focusFollowsMouse = False,
-                        clickJustFocuses = False, borderWidth = 3,
-                        workspaces = kbWorkspaces, terminal = kbTerminal,
-                        normalBorderColor = "#dddddd", focusedBorderColor = "#1681f2",
-                        mouseBindings = myMouseBindings, layoutHook = kbLayout,
-                        manageHook = kbManageHook, logHook = kbPolybarLogHook dbus,
-                        startupHook = myStartupHook}
-            where
-                dynProjects = dynamicProjects projects
-                keybindings
-                  = addDescrKeys' ((kbModMask, xK_F1), showKeybindings) myKeys
-                urgencyHook = withUrgencyHook LibNotifyUrgencyHook
-    Suggested fix: Perhaps you intended to use FlexibleContexts
-    |
-130 |     urgencyHook = withUrgencyHook LibNotifyUrgencyHook
-    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#+end_example
+
+Update link
+#+begin_src shell :results raw drawer :export both :prologue "exec 2>&1" :epilogue ":"
+  set -vx
+  ln -sf /home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad-x86_64-linux ${HOME}/.cache/xmonad/
+#+end_src
+
+#+RESULTS:
+:results:
+ln -sf /home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad-x86_64-linux ${HOME}/.cache/xmonad/
++ ln -sf /home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad-x86_64-linux /home/karolbarski/.cache/xmonad/
+:
++ :
+:end:
+
+Validate link update
+#+begin_src shell :results raw drawer :export both
+  ls -lha ~/.cache/xmonad
+#+end_src
+
+#+RESULTS:
+:results:
+razem 16K
+drwxrwxr-x  2 karolbarski karolbarski 4,0K lut 27 12:01 .
+drwxrwxr-x 66 karolbarski karolbarski 4,0K lut 27 12:00 ..
+-rw-------  1 karolbarski karolbarski   56 maj 24  2024 prompt-history
+lrwxrwxrwx  1 karolbarski karolbarski  160 lut 27 12:01 xmonad-x86_64-linux -> /home/karolbarski/.config/xmonad/.stack-work/install/x86_64-linux/290c47439c02a9d376867cf866f77e88a08efc6fa0f83e89053534bedba4df17/9.6.6/bin/xmonad-x86_64-linux
+:end:
 
 #+name: restart-xmonad
-#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both
-  xmonad --restart
+#+begin_src bash :dir ~/.config/xmonad :results raw pp :export both :prologue "exec 2>&1" :epilogue ":"
+    xmonad --restart
 #+end_src
 
 #+RESULTS: restart-xmonad
@@ -644,36 +386,47 @@ config.hs:130:5: error:
 #+RESULTS: environment
 #+begin_example
 SHELL=/bin/bash
+WINDOWID=46137348
 QT_ACCESSIBILITY=1
 COLORTERM=truecolor
 XDG_CONFIG_DIRS=/etc/xdg/xdg-xmonad:/etc/xdg
+TERM_PROGRAM_VERSION=3.2a
+GTK_IM_MODULE=ibus
+TMUX=/tmp/tmux-1001/default,8695,0
+LANGUAGE=pl:en
 MANDATORY_PATH=/usr/share/gconf/xmonad.mandatory.path
 LC_ADDRESS=pl_PL.UTF-8
 LC_NAME=pl_PL.UTF-8
 SSH_AUTH_SOCK=/run/user/1001/gnupg/S.gpg-agent.ssh
+XMODIFIERS=@im=ibus
 DESKTOP_SESSION=xmonad
 DEVTOOLS_HOME=/home/karolbarski/projects/DevTools/
 LC_MONETARY=pl_PL.UTF-8
 BFM_CACHEDIR=/home/karolbarski/bfm_cache
 GTK_MODULES=gail:atk-bridge
 XDG_SEAT=seat0
+SNAP_EUID=1001
 PWD=/home/karolbarski/.config/xmonad
-XDG_SESSION_DESKTOP=xmonad
 LOGNAME=karolbarski
+XDG_SESSION_DESKTOP=xmonad
 XDG_SESSION_TYPE=x11
 GPG_AGENT_INFO=/run/user/1001/gnupg/S.gpg-agent:0:1
+SYSTEMD_EXEC_PID=6707
 _=/usr/bin/printenv
 XAUTHORITY=/run/user/1001/gdm/Xauthority
 WINDOWPATH=2
 GTK2_RC_FILES=/home/karolbarski/.gtkrc-2.0
 HOME=/home/karolbarski
 USERNAME=karolbarski
-LC_PAPER=pl_PL.UTF-8
 LANG=pl_PL.UTF-8
-LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
-VTE_VERSION=6003
-GNOME_TERMINAL_SCREEN=/org/gnome/Terminal/screen/f106f92f_0712_4ea3_99a5_a6d7221e1c3a
+LC_PAPER=pl_PL.UTF-8
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+EMACS_SNAP_DIR=/snap/emacs/2661
+EMACS_SNAP_USER_COMMON=/home/karolbarski/snap/emacs/common
+SNAP_UID=1001
+CLUTTER_IM_MODULE=ibus
 CMAKE_MODULE_PATH=/usr/lib/x86_64-linux-gnu/cmake
+ALACRITTY_SOCKET=/run/user/1001/Alacritty-:0-8659.sock
 LESSCLOSE=/usr/bin/lesspipe %s %s
 XDG_SESSION_CLASS=user
 LC_IDENTIFICATION=pl_PL.UTF-8
@@ -681,21 +434,29 @@ TERM=dumb
 DEFAULTS_PATH=/usr/share/gconf/xmonad.default.path
 LESSOPEN=| /usr/bin/lesspipe %s
 USER=karolbarski
-GNOME_TERMINAL_SERVICE=:1.82
+TMUX_PANE=%0
 DISPLAY=:0
-SHLVL=2
+SHLVL=3
+PAGER=cat
 LC_TELEPHONE=pl_PL.UTF-8
+QT_IM_MODULE=ibus
 LC_MEASUREMENT=pl_PL.UTF-8
 XDG_VTNR=2
-XDG_SESSION_ID=25
+XDG_SESSION_ID=2
 XDG_RUNTIME_DIR=/run/user/1001
 LC_TIME=pl_PL.UTF-8
-XDG_DATA_DIRS=/usr/share/xmonad:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
-PATH=/home/karolbarski/.ghcup/bin:/home/karolbarski/.cargo/bin:/home/karolbarski/.cabal/bin:/home/karolbarski/.local/bin:/home/karolbarski/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/emacs/current/usr/bin
+XDG_DATA_DIRS=/usr/share/xmonad:/usr/share/gnome:/home/karolbarski/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+PATH=/home/karolbarski/.cargo/bin:/home/karolbarski/.local/bin:/home/karolbarski/bin:/home/karolbarski/.cargo/bin:/home/karolbarski/.local/bin:/home/karolbarski/bin:/home/karolbarski/.cabal/bin:/home/karolbarski/.ghcup/bin:/home/karolbarski/.cargo/bin:/home/karolbarski/.local/bin:/home/karolbarski/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/snap/emacs/2661/usr/bin
+ALACRITTY_LOG=/tmp/Alacritty-8659.log
 GDMSESSION=xmonad
 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus
+ALACRITTY_WINDOW_ID=46137348
 LC_NUMERIC=pl_PL.UTF-8
+OLDPWD=/home/karolbarski/projects/ID8/res/hmi/src
+TERM_PROGRAM=tmux
 #+end_example
+
+
 * Additional software
 ** Alacritty
 Terminal emulator.
@@ -711,3 +472,27 @@ Install Alacritty
 #+begin_src bash :dir /sudo::/ :exports both :results raw pp
   sudo apt install alacritty
 #+end_src
+** autorandr
+Autorandr tool is used to adapt to actually detected monitor configuration.
+
+Installation
+#+begin_src sh :prologue "exec 2>&1" :epilogue ":"
+  pip install autorandr
+#+end_src
+
+Save current configuration
+#+begin_src sh :prologue "exec 2>&1" :epilogue ":"
+  autorandr --save home-baseus
+#+end_src
+
+#+RESULTS:
+: Saved current configuration as profile 'home-baseus'
+
+Detect active configuration
+#+begin_src sh :prologue "exec 2>&1" :epilogue ":"
+  autorandr
+#+end_src
+
+#+RESULTS:
+| home-baseus | (detected) | (current) |
+| work        |            |           |
